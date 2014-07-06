@@ -18,14 +18,33 @@ var fs = require('fs-extra')
 module.exports = {
 
 
+    list: function(req, res) {
+
+        console.log(req.param("lote"));
+
+        NotaFiscal.find({lote:req.param("lote")}).limit(100).sort('name ASC').done(function(err, notafiscals) {
+
+            // Error handling
+            if (err) {
+                return console.log(err);
+
+                // Found multiple users!
+            } else {
+                console.log("Notafiscal found:", notafiscals);
+                return res.view({notafiscals:notafiscals});
+            }
+        });
+
+    },
+
     /**
      * Action blueprints:
      *    `/notafiscal/parse`
      */
     load: function (req, res) {
-        var nfPath = '/home/icastilho/work/others/xml/toload'
+        var nfPath = '/home/icastilho/work/others/xml/toload/';
         var nfLoadedPath = '/home/icastilho/work/others/xml/loaded/';
-
+        var lote = 'lote01';
         fs.readdir(nfPath, function(err, files) {
             var i = 0;
             files.forEach(function (filename) {
@@ -38,38 +57,43 @@ module.exports = {
                     console.log('Read file ',filename );
 
                    //TODO verificar se é realmente um arquivo
+                    if(filename.substring(filename.length-4)=='.xml') {
 
-                    parser.parseString(data, function (err, parsed) {
-                        console.log('parse file done!', filename);
-                        console.dir(parsed);
+                        parser.parseString(data, function (err, parsed) {
+                            console.log('parse file done!', filename);
+                            console.dir(parsed);
+                            parsed.lote = lote;
+                            console.log(parsed.lote)
+                            //TODO verificar se a nota já nao foi carregada
 
-                        //TODO verificar se a nota já nao foi carregada
+                            //Salva a nota no banco de dados
+                            NotaFiscal.create(parsed).done(function (err, notafiscal) {
+                                console.log('create done')
+                                // Error handling
+                                if (err) {
+                                    return console.log(err);
 
-                        //Salva a nota no banco de dados
-                       NotaFiscal.create(parsed).done(function (err, notafiscal) {
-                            console.log('create done')
-                            // Error handling
-                            if (err) {
-                                return console.log(err);
-
-                                // The Notafiscal was created successfully!
-                            } else {
-                                console.log("Notafiscal created:", notafiscal);
-                            }
-                        });
-
-                        // Verifica se o diretorio  das notas carregadas exite
-                        fs.ensureDir(nfLoadedPath, function(err) {
-                            if (err) return console.error(err);
-
-                            //move a nota para o diretorio de notas carregadas
-                            fs.move(nfPath+filename, nfLoadedPath+filename, function(err){
-                                if (err) return console.error(err);
-                                console.log("Move a nota para o diretorio de notas carregadas ", filename)
+                                    // The Notafiscal was created successfully!
+                                } else {
+                                    console.log("Notafiscal created:", notafiscal);
+                                }
                             });
-                        })
 
-                    });
+                            // Verifica se o diretorio  das notas carregadas exite
+                            fs.ensureDir(nfLoadedPath, function (err) {
+                                if (err) return console.error(err);
+
+                                //move a nota para o diretorio de notas carregadas
+                                fs.move(nfPath + filename, nfLoadedPath + filename, function (err) {
+                                    if (err) return console.error(err);
+                                    console.log("Move a nota para o diretorio de notas carregadas ", filename)
+                                });
+                            })
+
+                        });
+                    }else{
+                        console.log('Nao é XML', filename);
+                    }
                 });
                 i++;
                 console.log(i);

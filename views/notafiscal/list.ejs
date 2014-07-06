@@ -1,0 +1,52 @@
+<body >
+<br/>
+    <div class="page-header">
+        <h1>Nota Fiscal <small>Listagem:</small></h1>
+    </div>
+
+    <div class="panel panel-primary">
+        <!-- Default panel contents -->
+        <div class="panel-heading"></div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>CNPJ Emit</th>
+                        <th>Nome Emit</th>
+                        <th>CNPJ Dest</th>
+                        <th>Nome Dest</th>
+                        <th>Data Emissão</th>
+                        <th>Nr Itens</th>
+                        <th>Valor NF</th>
+                    </tr>
+                </thead>
+                <% 
+                if(!notafiscals.isNullOrUndefined){
+                    _.each(notafiscals, function (notafiscal) { %>
+                        <tr>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ %></td>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].emit[0].xNome %></td>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].dest[0].CNPJ %></td>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].dest[0].xNome %></td>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].ide[0].dEmi %></td>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].det[0].attr.nItem %></td>
+                            <td><%= notafiscal.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF %></td>
+                        </tr>
+                <%  })
+                }else{ %>
+                    <tr>
+                        <td>Nenhum registro encontrado</td>
+                    </tr>
+               <% } %>
+
+
+            </table>
+        </div>
+    </div>
+
+    <ul>
+
+    </ul>
+</body>

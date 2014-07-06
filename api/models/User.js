@@ -9,7 +9,14 @@
 module.exports = {
 
   attributes: {
-  	
+
+    permissoes: {
+        type: 'array',
+        Permissao: {
+            name:'string',
+            value:'boolean'
+        }
+    }
   	/* e.g.
   	nickname: 'string'
   	*/
