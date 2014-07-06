@@ -1,0 +1,2 @@
+# recu
+### a Sails application
