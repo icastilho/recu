@@ -37,18 +37,13 @@ module.exports = {
 
 
         var lote = req.param("lote");
-        if(isNullOrUndefined(lote)){
-            lote = '*'
-        }
+
         var trimestre = req.param("trimestre");
         var query = req.param("query");
         console.log(query);
 
         NotaFiscal.find()
-            .where( {
-                lote:lote,
-                'nfeProc.NFe.infNFe.ide.dEmi': getTrimestre(trimestre)
-            })
+
         .limit(100).sort('nfeProc.NFe.infNFe.ide.dEmi ASC').done(function(err, notafiscals) {
 
             // Error handling
