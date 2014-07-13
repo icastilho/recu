@@ -34,17 +34,15 @@ module.exports = {
 
 
     list: function(req, res) {
-
-
         var lote = req.param("lote");
-
         var trimestre = req.param("trimestre");
-        var query = req.param("query");
-        console.log(query);
-
-        NotaFiscal.find()
-
-        .limit(100).sort('nfeProc.NFe.infNFe.ide.dEmi ASC').done(function(err, notafiscals) {
+        var ano = req.param("ano");
+        var q = {'nfeProc.NFe.infNFe.ide.dEmi': getTrimestre(trimestre),lote: lote };
+        var qAno = {'nfeProc.NFe.infNFe.ide.dEmi': {startsWith: ano}};
+        console.log(q);
+        NotaFiscal.find(qAno)
+            .where(q)
+        .limit(10).sort('nfeProc.NFe.infNFe.ide.dEmi ASC').done(function(err, notafiscals) {
 
             // Error handling
             if (err) {
@@ -59,24 +57,10 @@ module.exports = {
 
     },
 
-    findNumber: function(req,res){
-        NotaFiscal.findOne(
-            {'nfeProc.NFe.infNFe.attr.Id':req.param("number")}
-        ).done(function(err, notafiscals) {
-                if (err) {
-                    return console.log(err);
-                } else {
-
-                    if(notafiscals==undefined){
-                        console.log('undefined')
-                    }
-                    console.log("Notafiscal found:", notafiscals);
-
-                    return notafiscals;
-                }
-            });
+    analisar: function(req, res) {
 
     },
+
     /**
      * Action blueprints:
      *    `/notafiscal/parse`
