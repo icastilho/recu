@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="recu">
   <head>
     <!--
         For demonstration purposes, the `title` is dynamically set here based on
@@ -37,11 +37,11 @@
 
       <!-- Optional theme -->
       <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-      <link rel="stylesheet" href="/css/app.css">
+      <link rel="stylesheet" href="linker/styles/app.css">
 
   </head>
 
-  <body ng-app="starter">
+  <body >
       <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
           <div class="container-fluid">
               <div class="navbar-header">
@@ -66,7 +66,7 @@
           </div>
       </nav>
     <!-- Include the view file for the current controller/route -->
-    <div class="container" role="main" ng-controller="MainCtrl">
+    <div class="container" role="main">
         <%- body %>
     </div>
 
@@ -75,29 +75,27 @@
       Client-side Javascript
       ========================
 
-      You can import any js files in your `assets` directory as you would 
+      You can import any js files in your `assets` directory as you would
       normally: using <script></script> tags.
 
       Here's an example of importing a few dependencies, in order:
     -->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+
+      <script src="//code.jquery.com/jquery-2.1.0.js"></script>
+      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+
       <script src="https://app.userapp.io/js/userapp.client.js"></script>
       <script src="https://app.userapp.io/js/angularjs.userapp.js"></script>
 
       <!-- Bring in the socket.io client -->
-      <script type="text/javascript" src="/js/socket.io.js"></script>
+      <script src="linker/js/socket.io.js"></script>
       <!-- then beef it up with some convenience logic for talking to Sails.js -->
-      <script type="text/javascript" src="/js/sails.io.js"></script>
+      <script src="linker/js/sails.io.js"></script>
       <!-- listen on socket.io for incoming messages -->
-      <script type="text/javascript" src="/js/app.js"></script>
-      <script type="text/javascript" src="/js/controllers.js"></script>
-
-      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-      <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
-
-
-
+      <script src="linker/js/app.js"></script>
+      <script src="linker/js/recu.js"></script>
+      <!--<script type="text/javascript" src="/linker/js/controllers.js"></script>-->
 
 
     <!--
@@ -119,7 +117,7 @@
       Another way: The Asset Linker
       ========================
 
-      Sails supports a Grunt-based asset linker, to automatically inject 
+      Sails supports a Grunt-based asset linker, to automatically inject
       <link> and <script> tags, as well any client-side templates you're using
       into your HTML layouts and views, respecting dependencies.
 
@@ -128,7 +126,6 @@
       http://sailsjs.org/#!documentation/asset-management
 
     -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
     </body>
 
 </html>

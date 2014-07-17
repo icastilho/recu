@@ -3,6 +3,8 @@
 > * AngularJS
   * [Mocha](http://visionmedia.github.io/mocha/)
   * Sails
+  
+**Sempre que adicionar algum módulo node usar o *--save* para que o mesmo já seja adicionado no package.json**
 
 
 ### How do I get set up? ###
