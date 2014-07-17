@@ -1,0 +1,11 @@
+<form class="form-signin" role="form" ua-login>
+  <h2 class="form-signin-heading">Please log in</h2>
+  <input name="login" type="email" class="form-control" placeholder="Email address" required="" autofocus="">
+  <input name="password" type="password" class="form-control" placeholder="Password" required="">
+  <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+  <a href="/signup">Sign up</a>
+  <!--<p><a href="#/reset-password">Reset password</a></p>-->
+
+  <p ng-show="loading"><i class="fa fa-spinner fa-spin"></i></p>
+  <div ng-show="error" class="alert alert-danger" role="alert">{{ error.message }}</div>
+</form>

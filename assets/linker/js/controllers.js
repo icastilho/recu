@@ -1,4 +1,4 @@
-angular.module('starter.controllers', [])
-  .controller('MainCtrl', function($scope) {
-    $scope.teste = 'teste'
+angular.module('recu.controllers', [])
+  .controller('Index', function($scope) {
+    $scope.teste = 'Diego'
   });

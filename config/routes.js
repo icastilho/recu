@@ -38,6 +38,10 @@ module.exports.routes = {
 
   '/login': {
     view: 'home/login'
+  },
+
+  '/signup': {
+    view: 'home/signup'
   }
 
   /*
