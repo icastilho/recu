@@ -2,7 +2,7 @@
   "name": "recu",
   "private": true,
   "version": "0.0.0",
-  "description": "a Sails application",
+  "description": " sistema de Recuperação tributária",
   "dependencies": {
     "sails": "0.9.16",
     "grunt": "~0.4.1",
