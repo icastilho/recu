@@ -1,17 +1,18 @@
 {
-  "name": "recu",
+  "name": "apura",
   "private": true,
-  "version": "0.0.0",
-  "description": " sistema de Recuperação tributária",
+  "version": "0.0.1",
+  "description": "Sistema de Recuperação tributária",
   "dependencies": {
-    "sails": "0.9.16",
-    "grunt": "~0.4.1",
-    "sails-disk": "~0.9.0",
     "ejs": "~0.8.4",
-    "optimist": "~0.3.4",
+    "formidable": "^1.0.15",
     "fs-extra": "~0.10.0",
-    "xml2js": "~0.4.4",
-    "sails-mongo": "~0.9.8"
+    "grunt": "~0.4.1",
+    "optimist": "~0.3.4",
+    "sails": "0.9.16",
+    "sails-disk": "~0.9.0",
+    "sails-mongo": "~0.9.8",
+    "xml2js": "~0.4.4"
   },
   "scripts": {
     "start": "node app.js",

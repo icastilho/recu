@@ -1,4 +1,4 @@
-/**
+    /**
  * NotaFiscalController
  *
  * @module      :: Controller
@@ -15,8 +15,8 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 var fs = require('fs-extra')
-
-
+var formidable = require('formidable')
+var util = require('util')
 function getTrimestre(trimestre){
 
     if(trimestre==1){
@@ -155,6 +155,18 @@ module.exports = {
         });
     },
 
+
+    /**
+     * Action blueprints:
+     *    `/notafiscal/upload`
+     */
+    upload: function (req, res) {
+        var lote = req.param('lote')
+        console.log(lote)
+        console.log(req.files);
+        res.json({process:'received upload:', lote:lote});
+
+    },
 
   /**
    * Overrides for the settings in `config/controllers.js`

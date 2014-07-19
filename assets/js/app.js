@@ -17,8 +17,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/verify-email', {templateUrl: 'partials/verify-email.html', verify_email: true});
   $routeProvider.when('/reset-password', {templateUrl: 'partials/reset-password.html', public: true});
   $routeProvider.when('/set-password', {templateUrl: 'partials/set-password.html', set_password: true});
-  /*$routeProvider.when('/articles', {templateUrl: 'partials/articles.html', controller: 'ArticlesCtrl'});*/
-  $routeProvider.when('/upload', {templateUrl: 'views/upload.html', controller: 'UploadCtrl'});
+  $routeProvider.when('/upload', {templateUrl: 'views/upload.html', controller: 'FileUploadCtrl'});
   $routeProvider.otherwise({redirectTo: '/'});
 }]).
 run(function(user) {
