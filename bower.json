@@ -1,0 +1,30 @@
+{
+  "name": "Apura",
+  "version": "0.0.1",
+  "authors": [
+    "icastilho <italorfc@gmail.com>"
+  ],
+  "description": "Sistema de Apuracao Tributaria",
+  "main": "app.js",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "123"
+  ],
+  "license": "MIT",
+  "homepage": "http://apura.herokuapp.com",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-file-upload": "~0.5.7",
+    "angular-bootstrap": "~0.11.0"
+  }
+}
