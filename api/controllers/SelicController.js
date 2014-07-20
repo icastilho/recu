@@ -10,7 +10,7 @@ var SelicController = {
 		var data = moment(req.param('data'), "DD/MM/YYYY").format(), valor = req.param('valor');
 
         Selic.find()
-            .where({ data: { '>': data}})
+            .where({ data: { '>=': data}})
             .sort('data')
             .exec(function(err, selics) {
                 _.each(selics, function(selic, i) {
