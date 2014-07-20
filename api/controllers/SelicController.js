@@ -1,4 +1,5 @@
 var SelicService = require('../services/SelicService.js')
+var moment = require('moment');
 var service = new SelicService();
 
 var SelicController = {
@@ -6,13 +7,28 @@ var SelicController = {
 	consultar: function(req, res){
 
 		
-		var data = req.param('data'), valor = req.param('valor');
+		var data = moment(req.param('data'), "DD/MM/YYYY").format(), valor = req.param('valor');
 
-		res.send({
-			data: data,
-			valor: valor,
-			taxa: service.consultar()
-		});
+        Selic.find()
+            .where({ data: { '>': data}})
+            .sort('data')
+            .exec(function(err, selics) {
+                _.each(selics, function(selic, i) {
+                    if(selic.fatorDiario > 0){
+                        valor = valor * selic.fatorDiario
+                    }
+
+                });
+
+                console.log(selics.length);
+
+                res.send({
+                    data: data,
+                    valor: valor,
+                    taxa: service.consultar()
+                });
+            });
+
 	},
 
     atualizar: function(req, res){

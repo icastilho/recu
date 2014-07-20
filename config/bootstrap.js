@@ -16,7 +16,7 @@ var moment = require('moment');
 module.exports.bootstrap = function (cb) {
     moment.lang('pt');
 
-    new CronJob('* */5 * * * *', function(){
+    new CronJob('0 0 7 * * *', function(){
         console.log("Atualizando Selic");
         service.atualizarSelic();
     }, null, true, "America/Sao_Paulo");

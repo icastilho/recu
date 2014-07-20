@@ -37,10 +37,12 @@ SelicService.prototype.atualizarSelic = function () {
         }
 
         var taxa = parseFloat(split[1].replace(',', '.'));
+        var fatorDiario = parseFloat(split[2].replace(',', '.'));
 
         var selic = {
-            data: split[0],
-            taxa: math.round(taxa, 3)
+            data: moment(split[0], 'DD/MM/YYYY').format(),
+            taxa: math.round(taxa, 3),
+            fatorDiario: fatorDiario
         };
 
         Selic.create(selic).done(function (err, user) {

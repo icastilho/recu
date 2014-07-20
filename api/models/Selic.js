@@ -10,8 +10,9 @@ module.exports = {
 
   attributes: {
   	data: 'date',
-  	taxa: 'float'
-    
+  	taxa: 'float',
+  	fatorDiario: 'float'
+
   }
 
 };
