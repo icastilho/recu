@@ -14,3 +14,13 @@
 >
 > **To connect using a driver via the standard URI (what's this?):**
 >>  mongodb://recut:recut@dbh75.mongolab.com:27757/heroku_app19033587
+
+## Rodando o Projeto sem Precisar ficar dando sails lift ###
+* First of All
+>> sudo -H npm install -g forever
+
+* Depois
+> forever -w start app.js
+
+* E para ver o Log
+> forever logs p.js -f
