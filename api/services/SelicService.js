@@ -20,7 +20,7 @@ SelicService.prototype.consultar = function (data, valor, callback) {
         });
 };
 
-SelicService.prototype.atualizarSelic = function () {
+/*SelicService.prototype.atualizarSelic = function () {
     var data = {
         dataInicial: moment().subtract('years', 10).startOf('year').format('l'),
         dataFinal: moment().format('l'),
@@ -62,6 +62,6 @@ SelicService.prototype.atualizarSelic = function () {
     });
 
 
-};
+};*/
 
 module.exports = SelicService;
