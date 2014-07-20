@@ -7,10 +7,17 @@ function SelicService() {
 
 }
 
-SelicService.prototype.consultar = function () {
-    return {
-        taxa: 10
-    }
+SelicService.prototype.consultar = function (data, valor, callback) {
+    Selic.find()
+        .where({ data: { '>=': data}})
+        .exec(function(err, selics) {
+            _.each(selics, function(selic, i) {
+                if(selic.fatorDiario > 0){
+                    valor = valor * selic.fatorDiario
+                }
+            });
+            callback(valor);
+        });
 };
 
 SelicService.prototype.atualizarSelic = function () {
