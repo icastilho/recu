@@ -6,7 +6,7 @@
   
 **Sempre que adicionar algum módulo node usar o *--save* para que o mesmo já seja adicionado no package.json**
 
-### Requeres
+### Requires
 - The [AngularJS](https://github.com/angular/angular.js) framework
 - ES5 (Array.indexOf, Array.forEach, Array.filter, Array.every, Function.bind, Date.now) A shim is provided for older browsers
 - [Angular File Upload] (https://github.com/nervgh/angular-file-upload) Plugin
