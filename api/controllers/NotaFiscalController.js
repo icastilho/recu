@@ -107,17 +107,17 @@ module.exports = {
                                             if (notafiscals == undefined) {
                                                 i++;
                                                 //Salva a nota no banco de dados
-                                                NotaFiscal.create(parsed).done(function (err, notafiscal) {
-                                                    console.log('create done')
-                                                    // Error handling
-                                                    if (err) {
-                                                        return console.log(err);
+                                                    NotaFiscal.create(parsed).done(function (err, notafiscal) {
+                                                        console.log('create Notafiscal done')
+                                                        // Error handling
+                                                        if (err) {
+                                                            return console.log(err);
 
-                                                        // The Notafiscal was created successfully!
-                                                    } else {
-                                                        console.log("Notafiscal created:", notafiscal);
-                                                    }
-                                                });
+                                                            // The Notafiscal was created successfully!
+                                                        } else {
+                                                            console.log("Notafiscal created:", notafiscal);
+                                                        }
+                                                    });
 
                                             } else {
                                                 duplicada++;
@@ -161,10 +161,18 @@ module.exports = {
      *    `/notafiscal/upload`
      */
     upload: function (req, res) {
-        var lote = req.param('lote')
-        console.log(lote)
-        console.log(req.files);
-        res.json({process:'received upload:', lote:lote});
+        console.log('upload nota fiscal')
+        File.create(req.files.file).done(function (err, file) {
+            console.log('create file done')
+            // Error handling
+            if (err) {
+                return console.log(err);
+                // The Notafiscal was created successfully!
+            } else {
+                console.log("File created:", file);
+                res.json({process:'received upload:', file:file});
+            }
+        });
 
     },
 
