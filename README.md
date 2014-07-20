@@ -17,7 +17,7 @@
 
 ## Rodando o Projeto sem Precisar ficar dando sails lift ###
 * First of All
->> sudo -H npm install -g forever
+> sudo -H npm install -g forever
 
 * Depois
 > forever -w start app.js
