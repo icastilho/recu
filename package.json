@@ -4,14 +4,19 @@
   "version": "0.0.1",
   "description": "Sistema de Recuperação tributária",
   "dependencies": {
+    "cron": "^1.0.4",
     "ejs": "~0.8.4",
     "formidable": "^1.0.15",
     "fs-extra": "~0.10.0",
     "grunt": "~0.4.1",
+    "mathjs": "^0.25.0",
+    "moment": "^2.7.0",
     "optimist": "~0.3.4",
+    "request": "^2.37.0",
     "sails": "0.9.16",
     "sails-disk": "~0.9.0",
     "sails-mongo": "~0.9.8",
+    "split": "^0.3.0",
     "xml2js": "~0.4.4"
   },
   "scripts": {
