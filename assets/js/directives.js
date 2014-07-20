@@ -26,4 +26,16 @@ angular.module('apura.directives', []).
 
 			render();
     };
-  }]);
+  }])
+
+.directive('tooltip', function () {
+    return {
+        restrict:'A',
+        link: function(scope, element, attrs)
+        {
+            $(element)
+                .attr('title',scope.$eval(attrs.tooltip))
+                .tooltip({placement: "top", html:'true'});
+        }
+    }
+});

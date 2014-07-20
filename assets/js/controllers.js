@@ -2,7 +2,7 @@
 
 /* Controllers */
 
-angular.module('apura.controllers', [])
+angular.module('apura.controllers', ['angularFileUpload'])
     .controller('HomeCtrl', ['$scope', function($scope) {
 
     }])
@@ -34,6 +34,7 @@ angular.module('apura.controllers', [])
 
         // create a uploader with options
         var uploader = $scope.uploader = $fileUploader.create({
+
             scope: $scope,                          // to automatically update the html. Default: $rootScope
             url: '/notafiscal/upload',
             formData: [
@@ -41,33 +42,27 @@ angular.module('apura.controllers', [])
             ],
             filters: [
                 function (item) {                    // first user filter
-                    console.info('filter1');
-                    return true;
+                    console.info('Filter Compressed file');
+                    if(item.type=='application/x-rar'
+                        || item.type=='application/zip'
+                        || item.type=='application/gzip'){
+                        console.log('File type is valid');
+
+                        return true;
+                    }
+                    console.log('File type is not valid')
+
+                    return false;
                 }
             ]
         });
-
-        // FAQ #1
-        var item = {
-            file: {
-                name: 'Previously uploaded file',
-                size: 1e6
-            },
-            progress: 100,
-            isUploaded: true,
-            isSuccess: true
-        };
-        item.remove = function() {
-            uploader.removeFromQueue(this);
-        };
-        uploader.queue.push(item);
-        uploader.progress = 100;
 
 
         // ADDING FILTERS
 
         uploader.filters.push(function (item) { // second user filter
-            console.info('filter2');
+//            console.info('filter2');
+
             return true;
         });
 
