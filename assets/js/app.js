@@ -8,6 +8,7 @@ angular.module('apura', [
   'apura.services',
   'apura.directives',
   'apura.controllers',
+  'apura.controllersfileupload',
   'UserApp'
 ]).
 config(['$routeProvider', function($routeProvider) {
