@@ -16,4 +16,5 @@ angular.module('apura.controllers.lote', [])
     $scope.processar = function(lote){
         console.log('Porcessar')
     }
+
 });

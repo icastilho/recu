@@ -1,0 +1,36 @@
+<!-- POSSIBLE CLASSES: minified, fixed-ribbon, fixed-header, fixed-width, top-menu
+     You can also add different skin classes such as "smart-skin-0", "smart-skin-1" etc...-->
+
+<!-- HEADER -->
+<header id="header" data-ng-include="'includes/header.html'"></header>
+<!-- END HEADER -->
+
+<!-- Left panel : Navigation area -->
+<!-- Note: This width of the aside area can be adjusted through LESS variables -->
+<aside id="left-panel"><span data-ng-include="'includes/left-panel.html'"></span></aside>
+<!-- END NAVIGATION -->
+
+<!-- MAIN PANEL -->
+<div id="main" role="main">
+
+  <!-- RIBBON -->
+  <div id="ribbon" data-ng-include="'includes/ribbon.html'" data-ribbon=""></div>
+  <!-- END RIBBON -->
+
+  <!-- MAIN CONTENT -->
+  <div id="content" data-ng-include="page" class="view-animate"></div>
+  <!-- END MAIN CONTENT -->
+
+</div>
+<!-- END MAIN PANEL -->
+
+<!-- PAGE FOOTER -->
+<div class="page-footer"><span data-ng-include="'includes/footer.html'"></span></div>
+<!-- END FOOTER -->
+
+<!-- SHORTCUT AREA : With large tiles (activated via clicking user name tag)
+Note: These tiles are completely responsive,
+you can add as many as you like
+-->
+<div id="shortcut"><span data-ng-include="'includes/shortcut.html'"></span></div>
+<!-- END SHORTCUT AREA -->
