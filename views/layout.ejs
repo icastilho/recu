@@ -39,11 +39,12 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav" ng-show="user.authenticated">
                     <li><a href="#/upload" menu-item>Enviar Lote</a></li>
+                    <li><a href="#/lote" menu-item>Visualizar Lotes</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li ng-show="!user.authenticated"><a href="#/login" menu-item>Log In</a></li>
-                    <li ng-show="!user.authenticated"><a href="#/signup" menu-item>Sign Up</a></li>
-                    <li ng-show="user.authenticated"><a href="" ua-logout>Log Out</a></li>
+                    <li ng-show="!user.authenticated"><a href="#/login" menu-item>Entrar</a></li>
+                    <li ng-show="!user.authenticated"><a href="#/signup" menu-item>Cadastrar</a></li>
+                    <li ng-show="user.authenticated"><a href="" ua-logout>Sair</a></li>
                 </ul>
             </div>
         </div>
@@ -65,6 +66,7 @@
 <!-- Controllers -->
 <script src="js/controllers.js"></script>
 <script src="js/controllers/fileupload.js"></script>
+<script src="js/controllers/lote.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/directives.js"></script>
 

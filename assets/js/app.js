@@ -9,6 +9,7 @@ angular.module('apura', [
   'apura.directives',
   'apura.controllers',
   'apura.controllers.fileupload',
+  'apura.controllers.lote',
   'UserApp'
 ]).
 config(['$routeProvider', function($routeProvider) {
@@ -19,6 +20,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/reset-password', {templateUrl: 'partials/reset-password.html', public: true});
   $routeProvider.when('/set-password', {templateUrl: 'partials/set-password.html', set_password: true});
   $routeProvider.when('/upload', {templateUrl: 'views/upload.html', controller: 'FileUploadCtrl'});
+  $routeProvider.when('/lote', {templateUrl: 'views/lote.html', controller: 'LoteCtrl'});
   $routeProvider.otherwise({redirectTo: '/'});
 }]).
 run(function(user) {
