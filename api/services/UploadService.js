@@ -10,7 +10,9 @@ var fs = require('fs'),
 
 var loteUpload;
 
-function UploadService(){}
+function UploadService(){
+
+}
 
 UploadService.prototype.upload = function(upload, callback){
     fs.createReadStream(upload.path)
@@ -33,19 +35,23 @@ function parsearArquivo(arquivo){
     temp.mkdir('temp', function(err, dirPath) {
         var inputPath = path.join(dirPath, arquivo.path);
 
-        arquivo.pipe(fs.createWriteStream(inputPath).on('close', function(){
-            fs.readFile(inputPath, function (error, data) {
+        arquivo
+            .pipe(fs.createWriteStream(inputPath)
+                .on('close', function(){
+                    fs.readFile(inputPath, function (error, data) {
 
-                parser.parseString(data, function (err, result) {
-                    if (error) {
-                        deferred.reject(new Error(error));
-                    } else{
-                        deferred.resolve(result);
-                    }
-                });
-            });
-        }))
-    });;
+                        parser.parseString(data, function (err, result) {
+                            if (error) {
+                                deferred.reject(new Error(error));
+                            } else{
+                                deferred.resolve(result);
+                            }
+                        });
+                    });
+                })
+            );
+        }
+    );
 
     return deferred.promise;
 }
