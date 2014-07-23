@@ -13,7 +13,8 @@ angular.module('apura.controllers.lote', [])
     })
 
 
-    $scope.processar = function(lote){
+    $scope.processar = function(loteName){
+        $http.post('/notafiscal/process',loteName);
         console.log('Porcessar')
     }
 

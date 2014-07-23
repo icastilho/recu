@@ -15,7 +15,6 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 var fs = require('fs-extra');
-var formidable = require('formidable');
 var util = require('util');
 var UploadService = require('../services/UploadService.js')
 
@@ -59,8 +58,11 @@ module.exports = {
 
     },
 
-    analisar: function (req, res) {
+    process: function(req, res) {
+        console.log("Start Process lote:...", req.param("lote"))
 
+        NotaFiscalService.processar(req.param("lote"));
+        res.json({process:"processing..."});
     },
 
     /**

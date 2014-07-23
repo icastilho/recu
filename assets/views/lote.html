@@ -1,16 +1,16 @@
 <div class="row" ng-controller="LoteCtrl">
-    <div class="col-xs-3">
-
-        <h3>Ultimos Lotes Importados</h3>
-
-    </div>
     <div class="col-xs-9" style="margin-bottom: 40px">
+        <h3>Ultimos Lotes Importados</h3>
         <table class="table">
             <thead>
                 <tr>
                     <th width="30%" >Nome</th>
                     <th >Status</th>
                     <th >Data Criação</th>
+                    <th >Qtd Credito</th>
+                    <th >Qtd Cancelamento</th>
+                    <th >Qtd Remessa</th>
+                    <th >Qtd Total</th>
                     <th >Ação</th>
                 </tr>
             </thead>
@@ -19,8 +19,12 @@
                     <td >{{lote.name}}</td>
                     <td >{{lote.status}}</td>
                     <td >{{lote.createdAt}}</td>
+                    <!--<td >{{lote.qtdCredito}}</td>
+                    <td >{{lote.qtdCencelamento}}</td>
+                    <td >{{lote.Remessa}}</td>
+                    <td >{{lote.qtdTotal}}</td>-->
                     <td nowrap>
-                        <button type="button" class="btn btn-success btn-xs" ng-click="lote.upload()" ng-disabled="!lote.status==='Novo'" >
+                        <button type="button" class="btn btn-success btn-xs" ng-click="lote.processar(lote.name)" ng-disabled="!lote.status==='Novo'" >
                             <span class="glyphicon glyphicon-upload"></span> Processar
                         </button>
                     </td>
