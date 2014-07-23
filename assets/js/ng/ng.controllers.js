@@ -52,17 +52,28 @@ angular.module('app.controllers', [])
           langCode: 'zh',
           flagCode: 'cn'
         }
-      ],
-
+      ]
     };
 
     return settings;
 
   }])
 
-  .controller('PageViewController', ['$scope', '$route', '$animate', '$routeParams', function($scope, $route, $animate, $routeParams) {
+  .controller('PageViewController', ['$scope', '$route', '$animate', '$routeParams', '$http', function($scope, $route, $animate, $routeParams, $http) {
 
-    $scope.page = 'views/'+ $routeParams.page + ($routeParams.child? '/' + $routeParams.child: '') + '.html';
+      if ($routeParams.page == 'notaFiscal') {
+        $http({method: 'GET', url: '/notafiscal'}).
+            success(function(data, status, headers, config) {
+              $scope.notasFiscais = data;
+              console.log('success', data);
+            }).
+            error(function(data, status, headers, config) {
+              console.log('error', data);
+            });
+      }
+
+      $scope.page = 'views/'+ $routeParams.page + ($routeParams.child? '/' + $routeParams.child: '') + '.html';
+
 
     // controler of the dynamically loaded views, for DEMO purposes only.
     /*$scope.$on('$viewContentLoaded', function() {

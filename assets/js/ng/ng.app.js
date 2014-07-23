@@ -26,11 +26,7 @@ smartApp.config(['$routeProvider', '$provide', function($routeProvider, $provide
     .when('/signup', {templateUrl: '/register.html', public: true})
     .when('/forgot-password', {templateUrl: '/forgotpassword.html', public: true})
 
-		// A bug in smartwidget with angular (routes not reloading).
-		// We need to reload these pages everytime so widget would work
-		// The trick is to add "/" at the end of the view.
-		// http://stackoverflow.com/a/17588833
-		.when('/:page', { // we can enable ngAnimate and implement the fix here, but it's a bit laggy
+		.when('/:page', {
 			templateUrl: function($routeParams) {
         if ($routeParams.page === 'login')
           return '/login.html';
