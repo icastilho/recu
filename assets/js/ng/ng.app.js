@@ -72,5 +72,5 @@ smartApp.config(['$routeProvider', '$provide', function($routeProvider, $provide
 
 smartApp.run(['$rootScope', 'settings', 'user', function($rootScope, settings, user) {
 	settings.currentLang = settings.languages[0]; // en
-  user.init({ appId: '53c13376ce73c' });
+  user.init({ appId: '53cee64a3d39e' });
 }])
