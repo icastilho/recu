@@ -1,8 +1,8 @@
-    /**
+/**
  * NotaFiscalController
  *
  * @module      :: Controller
- * @description	:: A set of functions called `actions`.
+ * @description    :: A set of functions called `actions`.
  *
  *                 Actions contain code telling Sails how to respond to a certain type of request.
  *                 (i.e. do stuff, then send some JSON, show an HTML page, or redirect to another URL)
@@ -14,50 +14,52 @@
  *
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
-var fs = require('fs-extra')
-var formidable = require('formidable')
-var util = require('util')
-function getTrimestre(trimestre){
+var fs = require('fs-extra');
+var formidable = require('formidable');
+var util = require('util');
+var UploadService = require('../services/UploadService.js')
 
-    if(trimestre==1){
-        return { '>=' : "2010-01-01",'<' : "2010-04-01" };
-    }else if(trimestre==2){
-        return { '>=' : "2010-04-01",'<' : "2010-06-01" };
-    }else if(trimestre==3){
-        return { '>=' : "2010-06-01",'<' : "2010-09-01" };
-    }else if(trimestre==4){
-        return { '>=' : "2010-09-01",'<' : "2010-12-01" };
+function getTrimestre(trimestre) {
+
+    if (trimestre == 1) {
+        return { '>=': "2010-01-01", '<': "2010-04-01" };
+    } else if (trimestre == 2) {
+        return { '>=': "2010-04-01", '<': "2010-06-01" };
+    } else if (trimestre == 3) {
+        return { '>=': "2010-06-01", '<': "2010-09-01" };
+    } else if (trimestre == 4) {
+        return { '>=': "2010-09-01", '<': "2010-12-01" };
     }
 }
 
 module.exports = {
 
 
-    list: function(req, res) {
+    list: function (req, res) {
         var lote = req.param("lote");
         var trimestre = req.param("trimestre");
         var ano = req.param("ano");
-        var q = {'nfeProc.NFe.infNFe.ide.dEmi': getTrimestre(trimestre),lote: lote };
+        var q = {'nfeProc.NFe.infNFe.ide.dEmi': getTrimestre(trimestre), lote: lote };
         var qAno = {'nfeProc.NFe.infNFe.ide.dEmi': {startsWith: ano}};
         console.log(q);
         NotaFiscal.find(qAno)
             .where(q)
-        .limit(10).sort('nfeProc.NFe.infNFe.ide.dEmi ASC').done(function(err, notafiscals) {
+            .limit(10).sort('nfeProc.NFe.infNFe.ide.dEmi ASC').done(function (err, notafiscals) {
 
-            // Error handling
-            if (err) {
-                return console.log(err);
+                // Error handling
+                if (err) {
+                    return console.log(err);
 
-                // Found multiple users!
-            } else {
-                console.log("Notafiscal found:", notafiscals);
-                return res.view({notafiscals:notafiscals});
-            }
-        });
+                    // Found multiple users!
+                } else {
+                    console.log("Notafiscal found:", notafiscals);
+                    return res.view({notafiscals: notafiscals});
+                }
+            });
 
     },
 
-    analisar: function(req, res) {
+    analisar: function (req, res) {
 
     },
 
@@ -69,7 +71,7 @@ module.exports = {
         var nfPath = '/home/icastilho/work/others/xml/toload/';
         var nfLoadedPath = '/home/icastilho/work/others/xml/loaded/';
         var lote = req.param("lote");
-        fs.readdir(nfPath, function(err, files) {
+        fs.readdir(nfPath, function (err, files) {
             var i = 0;
             var duplicada = 0;
             var cancelamento = 0;
@@ -77,13 +79,13 @@ module.exports = {
                 console.log(filename);
 
                 var xml2js = require('xml2js');
-                var parser = new xml2js.Parser({attrkey:'attr'});
+                var parser = new xml2js.Parser({attrkey: 'attr'});
 
-                fs.readFile(nfPath + filename, function(err, data) {
-                    console.log('Read file ',filename );
+                fs.readFile(nfPath + filename, function (err, data) {
+                    console.log('Read file ', filename);
 
-                   //TODO verificar se é realmente um arquivo
-                    if(filename.substring(filename.length-4)=='.xml') {
+                    //TODO verificar se é realmente um arquivo
+                    if (filename.substring(filename.length - 4) == '.xml') {
 
                         parser.parseString(data, function (err, parsed) {
                             console.log('parse file done!', filename);
@@ -92,10 +94,10 @@ module.exports = {
                             parsed.nome = filename;
                             console.log(parsed.lote);
                             console.log(parsed.nfeProc);
-                            if(parsed.nfeProc==undefined) {
+                            if (parsed.nfeProc == undefined) {
                                 cancelamento++;
                                 console.log("nota nao contem conteudo, provavelmente é cancelamento")
-                            }else{
+                            } else {
                                 //verificar se a nota já nao foi carregada
                                 NotaFiscal.findOne(
                                     {'nfeProc.NFe.infNFe.attr.Id': parsed.nfeProc.NFe[0].infNFe[0].attr.Id}
@@ -107,17 +109,17 @@ module.exports = {
                                             if (notafiscals == undefined) {
                                                 i++;
                                                 //Salva a nota no banco de dados
-                                                    NotaFiscal.create(parsed).done(function (err, notafiscal) {
-                                                        console.log('create Notafiscal done')
-                                                        // Error handling
-                                                        if (err) {
-                                                            return console.log(err);
+                                                NotaFiscal.create(parsed).done(function (err, notafiscal) {
+                                                    console.log('create Notafiscal done')
+                                                    // Error handling
+                                                    if (err) {
+                                                        return console.log(err);
 
-                                                            // The Notafiscal was created successfully!
-                                                        } else {
-                                                            console.log("Notafiscal created:", notafiscal);
-                                                        }
-                                                    });
+                                                        // The Notafiscal was created successfully!
+                                                    } else {
+                                                        console.log("Notafiscal created:", notafiscal);
+                                                    }
+                                                });
 
                                             } else {
                                                 duplicada++;
@@ -140,18 +142,18 @@ module.exports = {
 
                         });
 
-                    }else{
+                    } else {
                         console.log('Nao é XML', filename);
                     }
                 });
                 console.log(i);
             });
             console.log('Load Notafiscal Done! ');
-            console.log(i,' Notas Loaded');
-            console.log(duplicada,' Notas Duplicadas');
+            console.log(i, ' Notas Loaded');
+            console.log(duplicada, ' Notas Duplicadas');
             console.log(cancelamento, 'Cancelamento')
 
-            res.json({loaded:i, duplicadas:duplicada, cancelamento: cancelamento});
+            res.json({loaded: i, duplicadas: duplicada, cancelamento: cancelamento});
         });
     },
 
@@ -161,26 +163,21 @@ module.exports = {
      *    `/notafiscal/upload`
      */
     upload: function (req, res) {
-        console.log('upload nota fiscal')
-        File.create(req.files.file).done(function (err, file) {
-            console.log('create file done')
-            // Error handling
-            if (err) {
-                return console.log(err);
-                // The Notafiscal was created successfully!
-            } else {
-                console.log("File created:", file);
-                res.json({process:'received upload:', file:file});
-            }
+        var service = new UploadService();
+
+        service.upload(req.files.file, function(){
+            res.json({process: 'received upload:'});
         });
+
+
 
     },
 
-  /**
-   * Overrides for the settings in `config/controllers.js`
-   * (specific to NotaFiscalController)
-   */
-  _config: {}
+    /**
+     * Overrides for the settings in `config/controllers.js`
+     * (specific to NotaFiscalController)
+     */
+    _config: {}
 
-  
+
 };
