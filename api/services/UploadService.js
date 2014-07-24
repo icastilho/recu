@@ -15,6 +15,7 @@ function UploadService(){
 }
 
 UploadService.prototype.upload = function(upload, callback){
+    console.log(upload);
     fs.createReadStream(upload.path)
         .pipe(unzip.Parse())
         .on('entry', function (arquivo) {
