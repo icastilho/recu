@@ -15,7 +15,6 @@ function UploadService(){
 }
 
 UploadService.prototype.upload = function(upload, callback){
-    console.log(upload);
     fs.createReadStream(upload.path)
         .pipe(unzip.Parse())
         .on('entry', function (arquivo) {
@@ -40,10 +39,9 @@ function parsearArquivo(arquivo){
             .pipe(fs.createWriteStream(inputPath)
                 .on('close', function(){
                     fs.readFile(inputPath, function (error, data) {
-
                         parser.parseString(data, function (err, result) {
-                            if (error) {
-                                deferred.reject(new Error(error));
+                            if (err) {
+                                deferred.reject(err);
                             } else{
                                 deferred.resolve(result);
                             }
@@ -61,12 +59,8 @@ function invalidarArquivo(path){
     return S(path).contains('MACOSX') || !(S(path).endsWith('.xml'))
 }
 
-function validar(err, notaJson) {    
-    if(err){
-        console.log("error :"+err);
-    } else {
-        console.log(notaJson);
-    }    
+function validar(notaJson) {
+    console.log(notaJson);
 }
 
 module.exports = UploadService;
