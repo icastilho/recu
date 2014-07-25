@@ -81,7 +81,7 @@ function invalidarArquivo(path){
 }
 
 function validarXml(notaJson) {
-    if(notaJson != undefined && S(notaJson).contains('NFe')){
+    if(notaJson != undefined && notaJson.nfeProc != undefined){
         loteUpload.notas.push(notaJson);
         loteUpload.total++;
 
@@ -99,6 +99,7 @@ function classificar(notaJson) {
 }
 
 function salvar(callback) {
+    console.log(loteUpload);
     LoteUpload.create(loteUpload).done(function(err, lote){
         if(err)     console.log(err);
         else        callback(lote);
