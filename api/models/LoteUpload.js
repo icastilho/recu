@@ -1,13 +1,13 @@
 module.exports = {
     attributes: {
         nome: 'string',
-        arquivos: 'binary',
+        notas: 'array',
+        arquivo: 'binary',
         total: 'float',
         totalCredito: 'integer',
         totalCancelamento: 'integer',
         totalRemessa: 'integer',
         naoSaoNotas: 'integer',
         dataUpload: 'date'
-
     }
 };

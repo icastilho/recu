@@ -16,6 +16,7 @@
  */
 var fs = require('fs-extra');
 var util = require('util');
+var Q = require('q');
 var UploadService = require('../services/UploadService.js')
 
 function getTrimestre(trimestre) {
@@ -167,9 +168,10 @@ module.exports = {
     upload: function (req, res) {
         var service = new UploadService();
 
-        service.upload(req.files.file, function(){
+        Q.fcall(service.upload(req.files.file)
+            .then(function(){
             res.json({process: 'received upload:'});
-        });
+        }));
 
 
 
