@@ -81,7 +81,7 @@ function invalidarArquivo(path){
 }
 
 function validarXml(notaJson) {
-    if(notaJson != undefined && $(notaJson).contains('NFe')){
+    if(notaJson != undefined && S(notaJson).contains('NFe')){
         loteUpload.notas.push(notaJson);
         loteUpload.total++;
 
