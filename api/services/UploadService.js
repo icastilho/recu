@@ -8,20 +8,21 @@ var fs = require('fs'),
 
 
 
-var loteUpload = {
-    nome: null,
-    notas: [],
-    arquivo: null,
-    total: 0,
-    totalCredito: 0,
-    totalCancelamento: 0,
-    totalRemessa: 0,
-    naoSaoNotas: 0,
-    dataUpload: new Date()
-};
+
+var loteUpload;
 
 function UploadService(){
-
+    loteUpload = {
+        nome: null,
+        notas: [],
+        arquivo: null,
+        total: 0,
+        totalCredito: 0,
+        totalCancelamento: 0,
+        totalRemessa: 0,
+        naoSaoNotas: 0,
+        dataUpload: new Date()
+    };
 }
 
 UploadService.prototype.upload = function(upload){
@@ -41,16 +42,15 @@ UploadService.prototype.upload = function(upload){
         })
         .on('close', function(){
             salvar(function(){
-                deferred.resolve;
+                deferred.resolve();
             });
-
         });
 
     return deferred.promise;
 }
 function parsearArquivo(arquivo){
     var deferred = Q.defer();
-    var parser = new xml2js.Parser();
+    var parser = new xml2js.Parser({attrkey: '@'});
 
     temp.track();
 
@@ -93,13 +93,25 @@ function validarXml(notaJson) {
 }
 
 function classificar(notaJson) {
-    if(notaJson != undefined){
+    var nota = JSON.stringify(notaJson);
 
+    if(S(nota).contains('procCancNFe')){
+        loteUpload.totalCancelamento++;
     }
+
+    var natOp = notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0];
+
+    if(S(natOp).contains('VENDA')){
+        loteUpload.totalCredito++;
+    }
+
+    if(S(nataOp).contains('REMESSA')){
+        loteUpload.totalRemessa++;
+    }
+
 }
 
 function salvar(callback) {
-    console.log(loteUpload);
     LoteUpload.create(loteUpload).done(function(err, lote){
         if(err)     console.log(err);
         else        callback(lote);
