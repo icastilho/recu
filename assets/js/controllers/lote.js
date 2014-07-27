@@ -6,7 +6,7 @@ angular.module('apura.controllers.lote', [])
 
     var lotes = $scope.lotes = [];
 
-    $http.get('/file/view')
+    $http.get('/loteupload/view')
         .success(function(data) {
             console.log(data.lotes);
             $scope.lotes = data.lotes;
