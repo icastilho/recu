@@ -3,13 +3,12 @@ var BigNumber = require('bignumber.js');
 module.exports = {
 
     processar: function (loteName) {
-        NotaFiscal.find({lote: loteName}).limit(10)
+        NotaFiscal.find({lote: loteName})//.limit(10)
             .sort('nfeProc.NFe.infNFe.ide.dEmi ASC').done(function (err, notas) {
                 // Error handling
                 if (err) {
                     return console.log(err);
                 } else {
-                    console.log("Notafiscal found:", notas);
                     if(notas.length>0) {
                         run(notas, loteName);
                     }else{
@@ -34,8 +33,6 @@ var run = function(notas, lote){
         valorTotal: BigNumber(0)
     }
 
-    console.log(apuracao)
-
     notas.forEach(function(nota){
         var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
         if(cnpj != apuracao.cnpj){
@@ -47,8 +44,8 @@ var run = function(notas, lote){
                 var trimestre = getTrimestre(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi);
                 if(apuracao.trimestre==trimestre){
                     apuracao.valorTotal = apuracao.valorTotal.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
-                    apuracao.icms = apuracao.icms.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
-
+                    apuracao.frete =  apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
+                    apuracao.icms = apuracao.icms.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
                     apuracao.qtdNotas++;
                 }else{
                     console.log("Novo trimestre:", trimestre)
@@ -62,6 +59,10 @@ var run = function(notas, lote){
 
     console.log("Finish...")
     console.log("ICMS:",apuracao.icms.toString());
+    console.log("iCMSCorrigido:",apuracao.iCMSCorrigido.toString());
+    console.log("frete:",apuracao.frete.toString());
+    console.log("valorTotal:",apuracao.valorTotal.toString());
+
     console.log(apuracao)
 }
 
