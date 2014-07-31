@@ -62,37 +62,6 @@ smartApp.config(['$stateProvider', '$urlRouterProvider', '$provide', function ($
          }
       });
 
-
-      /* We are loading our views dynamically by passing arguments to the location url */
-
-//      .when('/login', {templateUrl: '/login.html', login: true})
-//      .when('/signup', {templateUrl: '/register.html', public: true})
-//      .when('/forgot-password', {templateUrl: '/forgotpassword.html', public: true})
-//
-//      .when('/:page', {
-//         templateUrl: function ($routeParams) {
-//            if ($routeParams.page === 'login')
-//               return '/login.html';
-//            else
-//               return '/index.html';
-//         },
-//         controller: 'PageViewController',
-//         public: false
-//      })
-//      .when('/:page/:child*', {
-//         templateUrl: function ($routeParams) {
-//            if ($routeParams.page === 'login')
-//               return '/login.html';
-//            else
-//               return '/index.html';
-//         },
-//         controller: 'PageViewController',
-//         public: false
-//      })
-//      .otherwise({
-//         redirectTo: '/dashboard'
-//      });
-
    // with this, you can use $log('Message') same as $log.info('Message');
    $provide.decorator('$log', ['$delegate',
       function ($delegate) {
