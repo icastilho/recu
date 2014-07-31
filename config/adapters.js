@@ -13,12 +13,14 @@
  */
 
 module.exports.adapters = {
-    'default': 'mongo',
+   'default': 'mongo',
 
-    mongo: {
-        module: 'sails-mongo',
-        host: 'localhost',
-        port: 27017,
-        database: 'heroku_app19033587'
-    }
+   mongo: {
+      module: 'sails-mongo',
+      host: 'localhost',
+      port: 27017,
+      user: '',
+      password: '',
+      database: 'recu'
+   }
 };
