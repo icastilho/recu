@@ -28,7 +28,19 @@ module.exports = function (grunt) {
     */
 
    var cssFilesToInject = [
-      'linker/**/*.css'
+      <!-- Basic Styles -->
+      'linker/css/bootstrap.min.css',
+      'linker/css/font-awesome.min.css',
+
+      <!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
+      'linker/css/smartadmin-production.min.css',
+      'linker/css/smartadmin-skins.min.css',
+
+      <!-- SmartAdmin RTL Support is under construction-->
+      'linker/css/smartadmin-rtl.min.css',
+
+      <!-- Goes with demo.js, you can delete this css when designing your own WebApp -->
+      'linker/css/demo.min.css'
    ];
 
 

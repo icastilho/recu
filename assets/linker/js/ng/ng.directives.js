@@ -43,10 +43,10 @@ angular.module('app.main', ['UserApp'])
 						$.SmartMessageBox({
 							title : "<i class='fa fa-sign-out txt-color-orangeDark'></i> Logout <span class='txt-color-orangeDark'><strong>" + $('#show-shortcut').text() + "</strong></span> ?",
 							content : $this.data('logout-msg') || "You can improve your security further after logging out by closing this opened browser",
-							buttons : '[No][Yes]'
+							buttons : '[Não][Sim]'
 				
 						}, function(ButtonPressed) {
-							if (ButtonPressed == "Yes") {
+							if (ButtonPressed == "Sim") {
 								$.root_.addClass('fadeOutUp');
 								setTimeout(logout, 1000);
 							}
