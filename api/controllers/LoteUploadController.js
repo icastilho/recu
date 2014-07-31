@@ -17,11 +17,11 @@
 
 module.exports = {
 
-
-
     view: function (req, res) {
         console.log('LoteUpload view')
-        LoteUpload.find()
+        LoteUpload
+            .find()
+            .limit(20)
             .done(function(err, lote) {
 
                 // Error handling

@@ -16,13 +16,13 @@
             </thead>
             <tbody>
                 <tr ng-repeat="lote in lotes">
-                    <td >{{lote.name}}</td>
+                    <td >{{lote.nome}}</td>
                     <td >{{lote.status}}</td>
                     <td >{{lote.createdAt}}</td>
-                    <!--<td >{{lote.qtdCredito}}</td>
-                    <td >{{lote.qtdCencelamento}}</td>
-                    <td >{{lote.Remessa}}</td>
-                    <td >{{lote.qtdTotal}}</td>-->
+                    <td >{{lote.totalCredito}}</td>
+                    <td >{{lote.totalCancelamento}}</td>
+                    <td >{{lote.totalRemessa}}</td>
+                    <td >{{lote.total}}</td>
                     <td nowrap>
                         <button type="button" class="btn btn-success btn-xs" ng-click="lote.processar(lote.name)" ng-disabled="!lote.status==='Novo'" >
                             <span class="glyphicon glyphicon-upload"></span> Processar
