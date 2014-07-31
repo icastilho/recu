@@ -28,3 +28,6 @@
 
 * E para ver o Log
 > forever logs p.js -f
+
+##Assets
+Os assets do layout.ejs são injetados automaticamente. Portanto caso queira fazer alguma alteração, adicione ou remova os assets e aponte no pipeline.js

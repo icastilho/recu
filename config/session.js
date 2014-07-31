@@ -15,8 +15,16 @@ module.exports.session = {
   // Session secret is automatically generated when your new app is created
   // Replace at your own risk in production-- you will invalidate the cookies of your users,
   // forcing them to log in again. 
-  secret: '38be36be609751522f8711b28292bb5b'
+  secret: 'dc3f269431601365145c2085fa69fb39',
 
+
+  // Set the session cookie expire time
+  // The maxAge is set by milliseconds, the example below is for 24 hours
+  //
+  // cookie: {
+  //   maxAge: 24 * 60 * 60 * 1000  
+  // }
+  
 
   // In production, uncomment the following lines to set up a shared redis session store
   // that can be shared across multiple Sails.js servers
