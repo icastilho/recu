@@ -16,11 +16,11 @@ module.exports.adapters = {
    'default': 'mongo',
 
    mongo: {
-      module: 'sails-mongo',
-      host: 'localhost',
-      port: 27017,
-      user: '',
-      password: '',
-      database: 'recu'
+     module: 'sails-mongo',
+     host: 'dbh75.mongolab.com',
+     port: 27757,
+     user: 'recut',
+     password: 'recut',
+     database: 'heroku_app19033587'
    }
 };
