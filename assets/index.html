@@ -1,5 +1,4 @@
-<!-- POSSIBLE CLASSES: minified, fixed-ribbon, fixed-header, fixed-width, top-menu
-     You can also add different skin classes such as "smart-skin-0", "smart-skin-1" etc...-->
+<script>$.root_.removeClass('fadeInDown').addClass('fixed-header');</script>
 
 <!-- HEADER -->
 <header id="header" data-ng-include="'includes/header.html'"></header>
@@ -18,7 +17,7 @@
   <!-- END RIBBON -->
 
   <!-- MAIN CONTENT -->
-  <div id="content" data-ng-include="page" class="view-animate"></div>
+  <div id="content" ui-view class="view-animate"></div>
   <!-- END MAIN CONTENT -->
 
 </div>

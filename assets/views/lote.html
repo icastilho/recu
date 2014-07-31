@@ -1,36 +1,45 @@
-<div class="row" ng-controller="LoteCtrl">
-    <div class="col-xs-9" style="margin-bottom: 40px">
-        <h3>Ultimos Lotes Importados</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th width="30%" >Nome</th>
-                    <th >Status</th>
-                    <th >Data Criação</th>
-                    <th >Qtd Credito</th>
-                    <th >Qtd Cancelamento</th>
-                    <th >Qtd Remessa</th>
-                    <th >Qtd Total</th>
-                    <th >Ação</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="lote in lotes">
-                    <td >{{lote.name}}</td>
-                    <td >{{lote.status}}</td>
-                    <td >{{lote.createdAt}}</td>
-                    <!--<td >{{lote.qtdCredito}}</td>
-                    <td >{{lote.qtdCencelamento}}</td>
-                    <td >{{lote.Remessa}}</td>
-                    <td >{{lote.qtdTotal}}</td>-->
-                    <td nowrap>
-                        <button type="button" class="btn btn-success btn-xs" ng-click="lote.processar(lote.name)" ng-disabled="!lote.status==='Novo'" >
-                            <span class="glyphicon glyphicon-upload"></span> Processar
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div class="row">
+   <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+      <h1 class="page-title txt-color-blueDark">
+         <i class="fa fa-lg fa-fw fa-cloud-upload"></i> Ultimos Lotes importados
+      </h1>
+   </div>
+</div>
+
+<div class="row">
+   <div class="col-xs-12">
+
+      <table class="table table-bordered table-striped table-hover">
+         <thead>
+         <tr>
+            <th width="30%">Nome</th>
+            <th>Status</th>
+            <th>Data Criação</th>
+            <th>Qtd Credito</th>
+            <th>Qtd Cancelamento</th>
+            <th>Qtd Remessa</th>
+            <th>Qtd Total</th>
+            <th>Ação</th>
+         </tr>
+         </thead>
+         <tbody>
+         <tr ng-repeat="lote in lotes">
+            <td>{{lote.name}}</td>
+            <td>{{lote.status}}</td>
+            <td>{{lote.createdAt}}</td>
+            <!--<td >{{lote.qtdCredito}}</td>
+            <td >{{lote.qtdCencelamento}}</td>
+            <td >{{lote.Remessa}}</td>
+            <td >{{lote.qtdTotal}}</td>-->
+            <td nowrap>
+               <button type="button" class="btn btn-success btn-xs" ng-click="lote.processar(lote.name)"
+                       ng-disabled="!lote.status==='Novo'">
+                  <span class="glyphicon glyphicon-upload"></span> Processar
+               </button>
+            </td>
+         </tr>
+         </tbody>
+      </table>
+   </div>
 
 </div>

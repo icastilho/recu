@@ -1,84 +1,19 @@
 angular.module('app.controllers', [])
   .factory('settings', ['$rootScope', function($rootScope){
-    // supported languages
 
     var settings = {
       languages: [
-        {
-          language: 'English',
-          translation: 'English',
-          langCode: 'en',
-          flagCode: 'us'
-        },
-        {
-          language: 'Espanish',
-          translation: 'Espanish',
-          langCode: 'es',
-          flagCode: 'es'
-        },
-        {
-          language: 'German',
-          translation: 'Deutsch',
-          langCode: 'de',
-          flagCode: 'de'
-        },
-        {
-          language: 'Korean',
-          translation: '한국의',
-          langCode: 'ko',
-          flagCode: 'kr'
-        },
-        {
-          language: 'French',
-          translation: 'français',
-          langCode: 'fr',
-          flagCode: 'fr'
-        },
         {
           language: 'Portuguese',
           translation: 'português',
           langCode: 'pt',
           flagCode: 'br'
-        },
-        {
-          language: 'Russian',
-          translation: 'русский',
-          langCode: 'ru',
-          flagCode: 'ru'
-        },
-        {
-          language: 'Chinese',
-          translation: '中國的',
-          langCode: 'zh',
-          flagCode: 'cn'
         }
       ]
     };
 
     return settings;
 
-  }])
-
-  .controller('PageViewController', ['$scope', '$route', '$animate', '$routeParams', '$http', function($scope, $route, $animate, $routeParams, $http) {
-
-      if ($routeParams.page == 'notaFiscal') {
-        $http({method: 'GET', url: '/notafiscal'}).
-            success(function(data, status, headers, config) {
-              $scope.notasFiscais = data;
-              console.log('success', data);
-            }).
-            error(function(data, status, headers, config) {
-              console.log('error', data);
-            });
-      }
-
-      $scope.page = 'views/'+ $routeParams.page + ($routeParams.child? '/' + $routeParams.child: '') + '.html';
-
-
-    // controler of the dynamically loaded views, for DEMO purposes only.
-    /*$scope.$on('$viewContentLoaded', function() {
-
-     });*/
   }])
 
   .controller('SmartAppController', ['$scope', function($scope) {
@@ -97,9 +32,7 @@ angular.module('app.controllers', [])
     // set the default language
     $scope.setLang($scope.currentLang);
 
-  }])
-
-;
+  }]);
 
 angular.module('app.demoControllers', [])
   .controller('WidgetDemoCtrl', ['$scope', '$sce', function($scope, $sce) {
