@@ -1,5 +1,5 @@
 /**
- * LoteUploadController
+ * ApuracaoController
  *
  * @module      :: Controller
  * @description	:: A set of functions called `actions`.
@@ -16,28 +16,13 @@
  */
 
 module.exports = {
+    
+  
 
-    view: function (req, res) {
-        console.log('LoteUpload view')
-        LoteUpload
-            .find()
-            .limit(20)
-            .done(function(err, lote) {
 
-                // Error handling
-                if (err) {
-                    return console.log(err);
-
-                    // Found multiple users!
-                } else {
-                    console.log("LoteUpload found:", lote);
-                    res.json({lotes:lote});
-                }
-            });
-    },
   /**
    * Overrides for the settings in `config/controllers.js`
-   * (specific to LoteUploadController)
+   * (specific to ApuracaoController)
    */
   _config: {}
 

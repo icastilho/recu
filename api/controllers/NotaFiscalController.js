@@ -60,9 +60,9 @@ module.exports = {
     },
 
     process: function(req, res) {
-        console.log("Start Process lote:...", req.param("lote"))
+        console.log("Start Apuracao lote:...", req.param("lote"))
 
-        NotaFiscalService.processar(req.param("lote"));
+        NotaFiscalService.apurar(req.param("lote"));
         res.json({process:"processing..."});
     },
 
