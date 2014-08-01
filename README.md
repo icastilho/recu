@@ -31,3 +31,15 @@
 
 ##Assets
 Os assets do layout.ejs são injetados automaticamente. Portanto caso queira fazer alguma alteração, adicione ou remova os assets e aponte no pipeline.js
+
+# Deploy no Heroku
+
+Instale o client do heroku
+
+>* *Autenticar:* **heroku login**
+* *Adicionar a chave, caso não tenha feito ainda:* **heroku keys:add ~/.ssh/id_rsa.pub**
+* *Publicar:* **git push heroku master**
+
+Add-ons
+
+>* **Papertrail**: para verificar os logs
