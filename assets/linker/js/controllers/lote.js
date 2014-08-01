@@ -1,7 +1,7 @@
 (function() {
    'use strict';
 
-   function LoteController($scope, $http, $fileUploader) {
+   function LoteController($scope, $http) {
 
       $scope.lotes = [];
 
@@ -18,7 +18,7 @@
    }
 
    angular.module('apura.controllers.lote', [])
-      .controller('LoteCtrl', LoteController);
+      .controller('LoteCtrl', ['$scope', '$http', LoteController]);
 
 })();
 
