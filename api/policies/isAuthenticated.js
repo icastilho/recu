@@ -1,12 +1,10 @@
-var AuthenticatorService = require('../services/authenticator-service.js')
-
 module.exports = function(req, res, next) {
 
   if (req.isAuthenticated())
     return next();
 
   if (req.cookies.ua_session_token)
-    new AuthenticatorService(req, res, next).authenticate();
+    new sails.config.authenticator(req, res, next).authenticate();
   else
     return res.forbidden('You are not permitted to perform this action.');
 };

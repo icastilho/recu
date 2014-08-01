@@ -1,6 +1,6 @@
 var passport = require('passport');
 
-function AuthenticatorService(req, res, next) {
+function Authenticator(req, res, next) {
 
   this.authenticate = function() {
 
@@ -24,4 +24,4 @@ function AuthenticatorService(req, res, next) {
 
 }
 
-module.exports = AuthenticatorService;
+module.exports.authenticator = Authenticator;
