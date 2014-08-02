@@ -54,7 +54,7 @@ SelicService.prototype.atualizarSelic = function () {
             fatorDiario: fatorDiario
         };
 
-        Selic.create(selic).done(function (err, user) {
+        Selic.create(selic).exec(function (err, user) {
             if (err) {
                 return console.log(err);
             } else {

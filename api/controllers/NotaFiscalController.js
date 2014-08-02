@@ -18,7 +18,9 @@
 var fs = require('fs-extra');
 var util = require('util');
 var Q = require('q');
-var UploadService = require('../services/UploadService.js')
+var UploadService = require('../services/UploadService.js');
+var Busboy = require('busboy');
+
 
 function getTrimestre(trimestre) {
 
@@ -162,12 +164,14 @@ module.exports = {
     upload: function (req, res) {
         var service = new UploadService();
 
-        Q.fcall(service.upload(req.files.file)
-            .then(function(){
-            res.json({process: 'received upload:'});
-        }));
-    },
+        req.file('file').upload(function (err, files) {
+            if (err)
+                return res.serverError(err);
 
+            res.json({process: 'received upload:'});
+        });
+
+    },
     /**
      * Overrides for the settings in `config/controllers.js`
      * (specific to NotaFiscalController)

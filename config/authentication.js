@@ -1,6 +1,7 @@
 var passport = require('passport'),
     _ = require('underscore'),
     UserAppStrategy = require('passport-userapp').Strategy,
+    S = require('string'),
     users = [];
 
 // Passport session setup
@@ -12,6 +13,7 @@ passport.deserializeUser(function (username, done) {
   var user = _.find(users, function (user) {
     return user.username == username;
   });
+
   if (user === undefined) {
     done(new Error('No user with username "' + username + '" found.'));
   } else {

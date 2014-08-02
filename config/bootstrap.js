@@ -8,7 +8,26 @@
  * http://sailsjs.org/#documentation
  */
 
+var Upload = require("../api/services/UploadService");
+var CronJob = require('cron').CronJob;
+var SelicService = require('../api/services/SelicService.js');
+var service = new SelicService();
+var moment = require('moment');
+
+
 module.exports.bootstrap = function (cb) {
+
+    moment.lang('pt');
+    var upload = new Upload();
+
+    new CronJob('0 * * * * *', function(){
+        console.log("Processando Arquivos -- INICIO");
+        upload.processarArquivos();
+    }, function(){
+        console.log("Processando Arquivos -- FIM");
+    }, true, "America/Sao_Paulo");
+
+
 
   // It's very important to trigger this callack method when you are finished 
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
