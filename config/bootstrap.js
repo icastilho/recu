@@ -8,7 +8,7 @@
  * http://sailsjs.org/#documentation
  */
 
-var Upload = require("../api/services/UploadService");
+var UploadJob = require("../api/services/UploadJob.js");
 var CronJob = require('cron').CronJob;
 var SelicService = require('../api/services/SelicService.js');
 var service = new SelicService();
@@ -18,10 +18,11 @@ var moment = require('moment');
 module.exports.bootstrap = function (cb) {
 
     moment.lang('pt');
-    var upload = new Upload();
+    var upload = new UploadJob();
 
     new CronJob('*/10 * * * * *', function(){
         console.log("Processando Arquivos ... ");
+
         upload.processarArquivos();
     }, null, true, "America/Sao_Paulo");
 

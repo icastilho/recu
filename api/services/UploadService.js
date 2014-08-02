@@ -3,7 +3,8 @@ var fs = require('fs'),
     Q = require('q'),
     S = require('string'),
     path = require('path'),
-    AdmZip = require('adm-zip');
+    AdmZip = require('adm-zip'),
+    _ = require('underscore');
 
 
 var loteUpload;
@@ -17,7 +18,9 @@ function UploadService() {
         totalCredito: 0,
         totalCancelamento: 0,
         totalRemessa: 0,
-        naoSaoNotas: 0
+        naoSaoNotas: 0,
+        chavesDuplicadas: [],
+        duplicadas: 0
     };
 }
 
@@ -59,6 +62,7 @@ UploadService.prototype.upload = function (file, filename) {
 
     Q.all(queue).then(function () {
         salvar(function(){
+            console.log("salvou");
             deferred.resolve();
         })
     });
@@ -92,8 +96,24 @@ function invalidarArquivo(path) {
 
 function validarXml(notaJson) {
     if (notaJson != undefined && notaJson.nfeProc != undefined) {
-        loteUpload.notas.push(notaJson);
-        loteUpload.total++;
+        var chNFe = notaJson.nfeProc.protNFe[0].infProt[0].chNFe[0];
+
+        ChaveNota.find()
+            .where({chave: chNFe})
+            .exec(function (err, chave) {
+
+                if(chave.length == 0){
+                    loteUpload.notas.push(notaJson);
+                    loteUpload.total++;
+                } else{
+                    console.log("Nota Duplicada " + chave[0].chave);
+                    loteUpload.chavesDuplicadas.push(notaJson);
+                    notaJson = "DUPLICADA";
+                    loteUpload.duplicadas++;
+                }
+            });
+
+
 
         return notaJson;
     } else {
@@ -125,7 +145,19 @@ function classificar(notaJson) {
 function salvar(callback) {
     LoteUpload.create(loteUpload).exec(function (err, lote) {
         if (err)     console.log(err);
-        else        callback(lote);
+        else     {
+            _.each(loteUpload.notas, function (nota) {
+                var chaveNota = {
+                    chave: nota.nfeProc.protNFe[0].infProt[0].chNFe[0]
+                };
+
+                ChaveNota.create(chaveNota).exec(function (err, chave) {
+                    if (err)     console.log(err)
+                });
+            });
+
+            callback();
+        }
     });
 }
 
