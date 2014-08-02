@@ -42,7 +42,7 @@ UploadService.prototype.processarArquivos = function () {
 UploadService.prototype.upload = function (file, filename) {
     var deferred = Q.defer();
 
-    console.log("arquivo " + filename + " inicio processamenot.");
+    console.log("arquivo " + filename + " inicio processamento.");
 
     loteUpload.nome = filename;
 

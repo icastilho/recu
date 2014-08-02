@@ -21,11 +21,9 @@ module.exports.bootstrap = function (cb) {
     var upload = new Upload();
 
     new CronJob('0 * * * * *', function(){
-        console.log("Processando Arquivos -- INICIO");
+        console.log("Processando Arquivos ... ");
         upload.processarArquivos();
-    }, function(){
-        console.log("Processando Arquivos -- FIM");
-    }, true, "America/Sao_Paulo");
+    }, null, true, "America/Sao_Paulo");
 
 
 
