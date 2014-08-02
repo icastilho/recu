@@ -1,4 +1,4 @@
-<div class="row" ng-file-drop>
+<div class="row" ng-controller="FileUploadCtrl" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">
 
    <div class="col-xs-3">
 
@@ -6,13 +6,13 @@
 
       <div ng-show="uploader.isHTML5">
          <!-- 3. ng-file-over | ng-file-over="className" -->
-         <div class="well my-drop-zone" ng-file-over>
-            Arraste um arquivo
+          <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
+              Arraste um arquivo
          </div>
       </div>
       <!-- 2. ng-file-select | ng-file-select="options" -->
       Selecionar varios
-      <input ng-file-select type="file" multiple name="Selecione os arquivos"/><br/>
+      <input type="file" nv-file-select="" uploader="uploader" multiple  /><br/>
    </div>
 
    <div class="col-xs-9" style="margin-bottom: 40px">

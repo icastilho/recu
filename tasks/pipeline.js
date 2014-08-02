@@ -83,6 +83,10 @@ var jsFilesToInject = [
    'linker/js/angular-file-upload/angular-file-upload.min.js',
    'linker/js/libs/angular/ui-bootstrap-custom-tpls-0.11.0.js',
 
+    <!-- Upload -->
+    'linker/js/es5-shim/es5-shim.min.js',
+    'linker/js/es5-shim/es5-sham.min.js',
+
    <!-- Userapp.io -->
    'linker/js/libs/userapp.io/userapp.client.js',
    'linker/js/libs/userapp.io/angularjs.userapp.js',
@@ -92,6 +96,7 @@ var jsFilesToInject = [
 
    'linker/js/controllers/fileupload.js',
    'linker/js/controllers/lote.js',
+   'linker/js/controllers/selic.js',
 
    <!-- MAIN ANGULAR JS FILE -->
    'linker/js/ng/ng.app.js',
