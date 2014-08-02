@@ -12,8 +12,8 @@ angular
       'app.activity',
       'app.smartui',
       'apura.controllers.fileupload',
-      'apura.controllers.lote'
-//      'apura.controllers.selic'
+      'apura.controllers.lote',
+      'apura.controllers.selic'
    ])
    .config(['$stateProvider', '$urlRouterProvider', '$provide', function ($stateProvider, $urlRouterProvider, $provide) {
 

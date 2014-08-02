@@ -7,11 +7,14 @@
     function SelicController($scope, $http) {
 
         $scope.selic = [];
+        $scope.data = '12/12/2012';
+        $scope.valor = '0';
+        $scope.selic = null;
 
         $scope.consultar = function(data, valor){
-            data = new Date(2010,10,27)
-            valor = 93.60
-            $http.get('/selic/consultar?data='+data+"&valor="+valor);
+            $http.get('/selic/consultar?data='+$scope.data+"&valor="+$scope.valor).success(function(result){
+                $scope.selic = result;
+            });
         }
 
     }

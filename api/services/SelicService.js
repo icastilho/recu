@@ -12,7 +12,7 @@ SelicService.prototype.consultar = function (data, valor, callback) {
     Selic.find()
         .where({ data: { '>=': data}})
         .exec(function(err, selics) {
-            console.log(selics)
+            console.log("selics "+selics)
             _.each(selics, function(selic, i) {
                 if(selic.fatorDiario > 0){
                     valor = valor.times(selic.fatorDiario)

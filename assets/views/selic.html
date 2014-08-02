@@ -10,12 +10,12 @@
     <div class="col-xs-12">
 
             <label class="input">
-                <input type="text" name="selic" placeholder="Data">
+                <input type="text" name="selic" placeholder="Data" ng-model="data">
                 <b class="tooltip tooltip-bottom-right">Data</b>
             </label>
 
             <label class="input">
-                <input type="text" name="valor" placeholder="Valor">
+                <input type="text" name="valor" placeholder="Valor" ng-model="valor">
                 <b class="tooltip tooltip-bottom-right">Valor</b>
             </label>
             <label class="button">
@@ -25,3 +25,11 @@
             </label>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-xs-12" ng-show="selic">
+
+        <h3>Resultado: </h3> {{selic.valor}}
+    </div>
+</div>
+
