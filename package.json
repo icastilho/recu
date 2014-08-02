@@ -5,12 +5,13 @@
   "description": "Sistema de Recuperação tributária",
   "keywords": [],
   "dependencies": {
+    "adm-zip": "^0.4.4",
     "bignumber.js": "^1.4.1",
     "busboy": "^0.2.8",
-    "formidable": "^1.0.15",
     "cron": "^1.0.4",
     "ejs": "~0.8.4",
     "es5-shim": "^4.0.1",
+    "formidable": "^1.0.15",
     "fs-extra": "~0.10.0",
     "grunt": "0.4.2",
     "grunt-contrib-clean": "~0.5.0",
@@ -39,10 +40,8 @@
     "sails-mongo": "~0.10.0-rc5",
     "split": "^0.3.0",
     "string": "^1.9.0",
-    "temp": "~0.8.0",
     "underscore": "^1.6.0",
-    "unzip": "^0.1.9",
-    "xml2js": "~0.4.4"
+    "xml2js": "~0.4.4",
   },
   "scripts": {
     "start": "node app.js",

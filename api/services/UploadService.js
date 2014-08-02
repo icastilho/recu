@@ -1,10 +1,9 @@
 var fs = require('fs'),
-    unzip = require('unzip'),
     xml2js = require('xml2js'),
     Q = require('q'),
     S = require('string'),
     path = require('path'),
-    temp = require('temp');
+    AdmZip = require('adm-zip');
 
 
 var loteUpload;
@@ -18,8 +17,7 @@ function UploadService() {
         totalCredito: 0,
         totalCancelamento: 0,
         totalRemessa: 0,
-        naoSaoNotas: 0,
-        dataUpload: new Date()
+        naoSaoNotas: 0
     };
 }
 
@@ -46,51 +44,45 @@ UploadService.prototype.upload = function (file, filename) {
 
     loteUpload.nome = filename;
 
-    fs.createReadStream(file)
-        .pipe(unzip.Parse())
-        .on('entry', function (arquivo) {
+    var zip = new AdmZip(file);
+    var dir = '.tmp/zips/';
+    var queue = [];
 
-            if (invalidarArquivo(arquivo.path)) return;
+    zip.extractAllTo(dir, true);
 
-            Q.fcall(parsearArquivo, arquivo)
-                .then(validarXml)
-                .then(classificar);
+    var files = fs.readdirSync(dir);
 
+    files.forEach(function (file) {
+        if (invalidarArquivo(file)) return;
+        queue.push(Q.fcall(parsearArquivo, dir + '/' + file));
+    });
+
+    Q.all(queue).then(function () {
+        salvar(function(){
+            deferred.resolve();
         })
-        .on('close', function () {
-            salvar(function () {
-                deferred.resolve();
-            });
-        });
+    });
 
     return deferred.promise;
 }
 
-function parsearArquivo(arquivo) {
+function parsearArquivo(path) {
     var deferred = Q.defer();
     var parser = new xml2js.Parser({attrkey: '@'});
 
-    temp.track();
+    console.log("parseando arquivo: " + path);
 
-    temp.mkdir('temp', function (err, dirPath) {
-            var inputPath = path.join(dirPath, arquivo.path);
-
-            arquivo
-                .pipe(fs.createWriteStream(inputPath)
-                    .on('close', function () {
-                        fs.readFile(inputPath, function (error, data) {
-                            parser.parseString(data, function (err, result) {
-                                if (err) {
-                                    deferred.reject(err);
-                                } else {
-                                    deferred.resolve(result);
-                                }
-                            });
-                        });
-                    })
-            );
-        }
-    );
+    fs.readFile(path, function (error, data) {
+        parser.parseString(data, function (err, nota) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                validarXml(nota);
+                classificar(nota);
+                deferred.resolve(nota);
+            }
+        });
+    });
 
     return deferred.promise;
 }
@@ -117,13 +109,14 @@ function classificar(notaJson) {
         loteUpload.totalCancelamento++;
     }
 
+
     var natOp = notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0];
 
     if (S(natOp).contains('VENDA')) {
         loteUpload.totalCredito++;
     }
 
-    if (S(nataOp).contains('REMESSA')) {
+    if (S(natOp).contains('REMESSA')) {
         loteUpload.totalRemessa++;
     }
 

@@ -7,7 +7,6 @@ module.exports = {
         totalCredito: 'integer',
         totalCancelamento: 'integer',
         totalRemessa: 'integer',
-        naoSaoNotas: 'integer',
-        dataUpload: 'date'
+        naoSaoNotas: 'integer'
     }
 };

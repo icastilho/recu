@@ -20,7 +20,7 @@ module.exports.bootstrap = function (cb) {
     moment.lang('pt');
     var upload = new Upload();
 
-    new CronJob('0 * * * * *', function(){
+    new CronJob('*/10 * * * * *', function(){
         console.log("Processando Arquivos ... ");
         upload.processarArquivos();
     }, null, true, "America/Sao_Paulo");
