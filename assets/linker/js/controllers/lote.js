@@ -11,8 +11,8 @@
          });
 
 
-      $scope.processar = function(loteName) {
-         $http.post('/notafiscal/process', loteName);
+      $scope.apurar = function(loteName) {
+         $http.post('/apuracao/apurar', loteName);
       };
 
    }

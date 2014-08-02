@@ -14,6 +14,7 @@
  *
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
+
 var fs = require('fs-extra');
 var util = require('util');
 var Q = require('q');
@@ -57,13 +58,6 @@ module.exports = {
                 }
             });
 
-    },
-
-    process: function(req, res) {
-        console.log("Start Apuracao lote:...", req.param("lote"))
-
-        NotaFiscalService.apurar(req.param("lote"));
-        res.json({process:"processing..."});
     },
 
     /**
@@ -172,9 +166,6 @@ module.exports = {
             .then(function(){
             res.json({process: 'received upload:'});
         }));
-
-
-
     },
 
     /**

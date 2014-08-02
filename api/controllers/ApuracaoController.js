@@ -15,9 +15,19 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
+var ApuracaoService = require('../services/ApuracaoService.js')
+var moment = require('moment');
+var service = new ApuracaoService();
+
+
 module.exports = {
-    
-  
+
+    apurar: function(req, res) {
+        console.log("Start Apuracao lote:...", req.param("lote"))
+
+        service.apurar(req.param("lote"));
+        res.json({process:"processing..."});
+    },
 
 
   /**

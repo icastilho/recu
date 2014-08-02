@@ -12,7 +12,8 @@ angular
       'app.activity',
       'app.smartui',
       'apura.controllers.fileupload',
-      'apura.controllers.lote',
+      'apura.controllers.lote'
+//      'apura.controllers.selic'
    ])
    .config(['$stateProvider', '$urlRouterProvider', '$provide', function ($stateProvider, $urlRouterProvider, $provide) {
 
@@ -38,6 +39,11 @@ angular
             templateUrl: 'views/lote.html',
             controller: 'LoteCtrl'
          })
+          .state('home.selic', {
+              url: '/selic',
+              templateUrl: 'views/selic.html',
+              controller: 'SelicCtrl'
+          })
          .state('auth', {
             url: "/auth",
             abstract: true,
