@@ -37,7 +37,7 @@ Os assets do layout.ejs são injetados automaticamente. Portanto caso queira faz
 Instale o client do heroku
 
 >* *Autenticar:* **heroku login**
-* *Adicionar a referência ao remote do Heroku:* **git remote add heroku git@heroku.com:apura.git**
+* *Adicionar a referência ao remote do Heroku:* **git remote add heroku git@heroku.com:gfiscali.git**
 * *Adicionar a chave, caso não tenha feito ainda:* **heroku keys:add ~/.ssh/id_rsa.pub**
 * *Publicar:* **git push heroku master**
 
