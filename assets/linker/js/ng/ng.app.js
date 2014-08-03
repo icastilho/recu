@@ -11,14 +11,16 @@ angular
       'app.localize',
       'app.activity',
       'app.smartui',
+      'apura.controllers.dashboard',
       'apura.controllers.fileupload',
       'apura.controllers.lote',
-      'apura.controllers.selic'
+      'apura.controllers.selic',
+      'apura.controllers.apuracao'
    ])
    .config(['$stateProvider', '$urlRouterProvider', '$provide', function ($stateProvider, $urlRouterProvider, $provide) {
 
       $urlRouterProvider
-         .otherwise('/home/upload');
+         .otherwise('/home/dashboard');
 
       $stateProvider
          .state('home', {
@@ -29,6 +31,11 @@ angular
                public: false
             }
          })
+          .state('home.dasboard', {
+              url: '/dashboard',
+              templateUrl: 'views/dashboard.html',
+              controller: 'DashBoardCtrl'
+          })
          .state('home.upload', {
             url: '/upload',
             templateUrl: 'views/upload.html',
@@ -43,6 +50,11 @@ angular
               url: '/selic',
               templateUrl: 'views/selic.html',
               controller: 'SelicCtrl'
+          })
+          .state('home.apuracao', {
+              url: '/apuracao',
+              templateUrl: 'views/apuracao.html',
+              controller: 'ApuracaoCtrl'
           })
          .state('auth', {
             url: "/auth",

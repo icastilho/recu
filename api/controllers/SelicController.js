@@ -12,7 +12,7 @@ var SelicController = {
         service.consultar(data, valor, function(valorAtualizado){
             res.send({
                 dataReferencia: moment().format('l'),
-                valor: valorAtualizado.round(2).toString()
+                valor: valorAtualizado.toString()
             });
         })
 	},

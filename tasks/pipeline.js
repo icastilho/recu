@@ -94,9 +94,11 @@ var jsFilesToInject = [
    <!-- MAIN APP JS FILE -->
    'linker/js/app.js',
 
+   'linker/js/controllers/dashboard.js',
    'linker/js/controllers/fileupload.js',
    'linker/js/controllers/lote.js',
    'linker/js/controllers/selic.js',
+   'linker/js/controllers/apuracao.js',
 
    <!-- MAIN ANGULAR JS FILE -->
    'linker/js/ng/ng.app.js',

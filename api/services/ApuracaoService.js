@@ -3,22 +3,21 @@
  */
 
 var BigNumber = require('bignumber.js');
-var SelicService = require('./SelicService.js');
-var selicService = new SelicService();
+var moment = require('moment');
+moment.lang('pt');
 
 function ApuracaoService() {
 
     this.apurar = function (loteName) {
-//        loteName = '1827-shr3hm.zip';
-        LoteUpload.find({nome: '/var/folders/f5/2l519w0x1hv39y317bjm8z380000gn/T/'+loteName}).limit(10)
-            .sort('notas.nfeProc.NFe.infNFe.ide.dEmi ASC').exec(function (err,lotes) {
+        LoteUpload.find({nome: loteName}).limit(10)
+//        NotaFiscal.find().where({lote: loteName}).limit(10)
+            .sort('notas.nfeProc.NFe.infNFe.ide.dEmi ASC').exec(function (err,lote) {
                 // Error handling
                 if (err) {
                     return console.log(err);
                 } else {
-                    if(lotes.length>0) {
-                        console.log(lotes[0].notas)
-                        run(lotes[0].notas, lotes[0].nome);
+                    if(lote.length>0) {
+                        run(lote[0].notas, lote[0].nome);
 
                     }else{
                         console.log("Nenhuma nota encontrada")
@@ -28,14 +27,16 @@ function ApuracaoService() {
     }
 
 }
-module.exports = ApuracaoService;
+
 
 function run(notas, lote){
     console.log("Runing...")
-    console.log(notas)
-    var dataEmi = parseToDate(notas[0].nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
 
+    notas.sort(notasCompare)
+
+    var dataEmi = parseToDate(notas[0].nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
     var apuracao = createApuracao( notas[0].nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0], dataEmi, lote);
+
 
     notas.forEach(function(nota){
         var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
@@ -44,18 +45,17 @@ function run(notas, lote){
             //TODO implementar tratamento para CNPJ diferentes econtrados
         }else{
             var dataEmissao = parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
-            var ano = dataEmissao.getFullYear();
+            var ano = dataEmissao.year();
             if( apuracao.ano == ano){
-                var trimestre = getTrimestre(dataEmissao);
+                var trimestre = dataEmissao.quarter();
                 if(apuracao.trimestre==trimestre){
-                    var icms = nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0];
+                    var icms = BigNumber(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
                     apuracao.valorTotal = apuracao.valorTotal.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
                     apuracao.frete =  apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
                     apuracao.icms = apuracao.icms.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
                     apuracao.qtdNotas++;
-
-                    selicService.consultar(dataEmissao,icms,function(valor){
-                        console.log("icms:",icms," corrigido:", valor)
+                    new SelicService().consultar(new Date(dataEmissao),icms,function(valor){
+                        console.log("icms:",icms.toString()," corrigido:", valor.toString())
                         //TODO Isso aqui vai dar merda?
                         apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(valor);
                     });
@@ -105,8 +105,8 @@ function saveApuracao(apuracao){
 function createApuracao(cnpj, dataEmissao, lote){
     return apuracao = {
         cnpj: cnpj,
-        ano: dataEmissao.getFullYear(),
-        trimestre: getTrimestre(dataEmissao),
+        ano: dataEmissao.year(),
+        trimestre: dataEmissao.quarter(),
         lote: lote,
         qtdNotas: 0,
         icms: BigNumber(0),
@@ -123,8 +123,9 @@ function createApuracao(cnpj, dataEmissao, lote){
  * @returns {Date}
  */
 function parseToDate(sdate){
-    var date = new Date(sdate+" 00:00:00");
-    return date
+    console.log(sdate)
+    var date = moment(sdate, "YYYY-MM-DD");
+    return date.compa
 }
 
 /**
@@ -137,3 +138,18 @@ function getTrimestre (date){
     trimestre = parseInt(date.getMonth()/3+1);
     return trimestre;
 }
+
+function notasCompare(a, b){
+    a = parseToDate(a.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
+    b = parseToDate(b.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
+
+    if(a.isBefore(b)){
+        return -1;
+    }else if(a.isSame(b)){
+        return 0;
+    }else{
+        return 1;
+    }
+}
+
+module.exports = ApuracaoService;

@@ -24,22 +24,22 @@ module.exports.connections = {
     adapter: 'sails-disk'
   },
 
-  mongo: {
+  /*mongo: {
     adapter   : 'sails-mongo',
      host: 'dbh75.mongolab.com',
      port: 27757,
      user: 'recut',
      password: 'recut',
      database: 'heroku_app19033587'
-  }
-/*    mongo: {
+  }*/
+    mongo: {
         module: 'sails-mongo',
         host: 'localhost',
         port: 27017,
         user: '',
         password: '',
         database: 'recu'
-    }*/
+    }
 
 };
 

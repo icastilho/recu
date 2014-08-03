@@ -16,7 +16,7 @@ SelicService.prototype.consultar = function (data, valor, callback) {
                     valor = valor.times(selic.fatorDiario)
                 }
             });
-            callback(valor);
+            callback(valor.round(2));
         });
 };
 
