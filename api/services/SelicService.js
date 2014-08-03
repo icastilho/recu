@@ -2,7 +2,6 @@ var request = require('request');
 var math = require('mathjs');
 var split = require('split');
 var moment = require('moment');
-var BigNumber = require('bignumber.js');
 
 function SelicService() {
 
@@ -11,8 +10,7 @@ function SelicService() {
 SelicService.prototype.consultar = function (data, valor, callback) {
     Selic.find()
         .where({ data: { '>=': data}})
-        .exec(function(err, selics) {
-            console.log("selics "+selics)
+            .exec(function(err, selics) {
             _.each(selics, function(selic, i) {
                 if(selic.fatorDiario > 0){
                     valor = valor.times(selic.fatorDiario)
