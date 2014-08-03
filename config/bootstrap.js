@@ -20,22 +20,19 @@ module.exports.bootstrap = function (cb) {
     moment.lang('pt');
     var upload = new UploadJob();
 
-    service.atualizarSelic();
+//    new CronJob('*/10 * * * * *', function(){
+//        console.log("Processando Arquivos ... ");
+//
+//        upload.processarArquivos();
+//    }, null, true, "America/Sao_Paulo");
 
+//
+//     new CronJob('* *//*
+//     5 * * * *', function(){
+//     console.log("Atualizando Selic");
+//     service.atualizarSelic();
+//     }, null, true, "America/Sao_Paulo");
 
-    new CronJob('*//*20 * * * * *', function(){
-        console.log("Processando Arquivos ... ");
-
-        upload.processarArquivos();
-    }, null, true, "America/Sao_Paulo");
-
-    /*
-     new CronJob('* *//*
-     5 * * * *', function(){
-     console.log("Atualizando Selic");
-     service.atualizarSelic();
-     }, null, true, "America/Sao_Paulo");
-*/
 
   // It's very important to trigger this callack method when you are finished 
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
