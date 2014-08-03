@@ -19,6 +19,8 @@
                <th>Qtd Cancelamento</th>
                <th>Qtd Remessa</th>
                <th>Qtd Total</th>
+               <th>Qtd Duplicadas</th>
+               <th>Qtd Outros</th>
                <th>Ação</th>
             </tr>
          </thead>
@@ -31,8 +33,10 @@
                <td>{{lote.totalCancelamento}}</td>
                <td>{{lote.totalRemessa}}</td>
                <td>{{lote.total}}</td>
+               <td>{{lote.duplicadas}}</td>
+               <td>{{lote.naoSaoNotas}}</td>
                <td nowrap>
-                  <button type="button" class="btn btn-success btn-xs" ng-click="lote.apurar(lote.name)"
+                  <button type="button" class="btn btn-success btn-xs" ng-click="apurar(lote.nome)"
                           ng-disabled="!lote.status==='Novo'">
                      <span class="glyphicon glyphicon-upload"></span> Processar
                   </button>

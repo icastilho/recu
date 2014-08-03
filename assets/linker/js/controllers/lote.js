@@ -12,7 +12,11 @@
 
 
       $scope.apurar = function(loteName) {
-         $http.post('/apuracao/apurar', loteName);
+          console.log('apurar lote:',loteName)
+
+          $http.post('/apuracao/apurar', JSON.stringify({
+              lote: loteName
+          }));
       };
 
    }

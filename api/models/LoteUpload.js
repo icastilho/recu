@@ -9,7 +9,8 @@ module.exports = {
         totalCancelamento: 'integer',
         totalRemessa: 'integer',
         naoSaoNotas: 'integer',
-        duplicadas: 'integer'
+        duplicadas: 'integer',
+        status: 'string'
 
     }
 };

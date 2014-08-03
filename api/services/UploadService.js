@@ -1,4 +1,4 @@
-var fs = require('fs'),
+var fs = require('fs-extra'),
     xml2js = require('xml2js'),
     Q = require('q'),
     S = require('string'),
@@ -20,7 +20,8 @@ function UploadService() {
         totalRemessa: 0,
         naoSaoNotas: 0,
         chavesDuplicadas: [],
-        duplicadas: 0
+        duplicadas: 0,
+        status: 'Novo'
     };
 }
 
@@ -44,20 +45,18 @@ UploadService.prototype.upload = function (file, filename) {
     var deferred = Q.defer();
 
     console.log("arquivo " + filename + " inicio processamento.");
-
     loteUpload.nome = filename;
-
     var zip = new AdmZip(file);
     var dir = '.tmp/zips/';
     var queue = [];
 
     zip.extractAllTo(dir, true);
-
+    console.log("extract to... : ", dir)
     var files = fs.readdirSync(dir);
 
     files.forEach(function (file) {
         if (invalidarArquivo(file)) return;
-        queue.push(Q.fcall(parsearArquivo, dir + '/' + file));
+        queue.push(Q.fcall(parsearArquivo, dir + file));
     });
 
     Q.all(queue).then(function () {
@@ -66,7 +65,6 @@ UploadService.prototype.upload = function (file, filename) {
             deferred.resolve();
         })
     });
-
     return deferred.promise;
 }
 
@@ -101,9 +99,9 @@ function validarXml(notaJson) {
         ChaveNota.find()
             .where({chave: chNFe})
             .exec(function (err, chave) {
-
                 if(chave.length == 0){
                     loteUpload.notas.push(notaJson);
+                    console.log("pos push lenth:",loteUpload.notas.length)
                     loteUpload.total++;
                 } else{
                     console.log("Nota Duplicada " + chave[0].chave);
@@ -112,9 +110,6 @@ function validarXml(notaJson) {
                     loteUpload.duplicadas++;
                 }
             });
-
-
-
         return notaJson;
     } else {
         loteUpload.naoSaoNotas++;
@@ -143,10 +138,14 @@ function classificar(notaJson) {
 }
 
 function salvar(callback) {
+    console.log("loteUpload saving...")
     LoteUpload.create(loteUpload).exec(function (err, lote) {
         if (err)     console.log(err);
         else     {
+            console.log("loteUpload saved, notas:", loteUpload.notas.length)
+            console.log("lote saved, notas:", lote.notas.length)
             _.each(loteUpload.notas, function (nota) {
+                nota.lote = loteUpload.nome;
                 var chaveNota = {
                     chave: nota.nfeProc.protNFe[0].infProt[0].chNFe[0]
                 };
@@ -154,6 +153,11 @@ function salvar(callback) {
                 ChaveNota.create(chaveNota).exec(function (err, chave) {
                     if (err)     console.log(err)
                 });
+
+                NotaFiscal.create(nota).exec(function (err, nota) {
+                    if (err)     console.log(err)
+                });
+
             });
 
             callback();

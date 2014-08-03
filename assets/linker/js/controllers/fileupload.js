@@ -8,39 +8,14 @@
            url: '/notafiscal/upload'
        });
 
-    /*  // create a uploader with options
-      var uploader = $scope.uploader = new FileUploader({
-
-         scope: $scope,                          // to automatically update the html. Default: $rootScope
-         url: '/notafiscal/upload',
-         formData: [
-            { key: 'value' }
-         ],
-         filters: [
-            function (item) {                    // first user filter
-               console.info('Filter Compressed file');
-               if(item.type=='application/x-rar'
-                  || item.type=='application/zip'
-                  || item.type=='application/gzip'){
-                  console.log('File type is valid');
-                  console.log(item)
-                  return true;
-               }
-               console.log('File type is not valid')
-
-               return false;
-            }
-         ]
-      });*/
-
-
       // FILTERS
-
-
        uploader.filters.push({
            name: 'customFilter',
-           fn: function(item /*{File|FileLikeObject}*/, options) {
-               return this.queue.length < 10;
+           fn: function(item , options) {
+               if(item.type=='application/zip'){
+                   return true;
+               }
+               return false;
            }
        });
 

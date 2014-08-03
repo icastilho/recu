@@ -624,7 +624,7 @@ angular.module('app.navigation', [])
 						<span class="menu-item-parent" data-localize="{{ title }}">{{ title }}</span>\
 					</a>\
 					<ul data-ng-transclude=""></ul>\
-				</li>',
+				</li>'
 
 		};
 	})
@@ -779,7 +779,7 @@ angular.module('app.activity', [])
 			transclude: true,
 			controller: 'ActivityController',
 			scope: {
-				onRefresh: '=onrefresh',
+				onRefresh: '=onrefresh'
 			},
 			template: '<span data-ng-transclude=""></span>'
 		};

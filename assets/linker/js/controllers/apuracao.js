@@ -6,7 +6,13 @@
 
     function ApuracaoController($scope, $http) {
 
-        $scope.apuracao = [];
+        $scope.apuracoes = [];
+
+        $http.get('/apuracao/list')
+            .success(function(data) {
+                $scope.apuracoes = data;
+        });
+
 
     }
 

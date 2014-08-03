@@ -1,7 +1,7 @@
 /**
  * Created by icastilho on 01/08/14.
  */
-
+Q = require('q');
 var BigNumber = require('bignumber.js');
 var moment = require('moment');
 moment.lang('pt');
@@ -9,15 +9,17 @@ moment.lang('pt');
 function ApuracaoService() {
 
     this.apurar = function (loteName) {
-        LoteUpload.find({nome: loteName}).limit(10)
-//        NotaFiscal.find().where({lote: loteName}).limit(10)
-            .sort('notas.nfeProc.NFe.infNFe.ide.dEmi ASC').exec(function (err,lote) {
+//        LoteUpload.find({nome: loteName}).limit(10)
+//        .sort('notas.nfeProc.NFe.infNFe.ide.dEmi ASC')
+        NotaFiscal.find().where({lote: loteName})//.limit(10)
+            .sort('nfeProc.NFe.infNFe.ide.dEmi ASC')
+            .exec(function (err,notas) {
                 // Error handling
                 if (err) {
                     return console.log(err);
                 } else {
-                    if(lote.length>0) {
-                        run(lote[0].notas, lote[0].nome);
+                    if(notas.length>0) {
+                        run(notas, loteName);
 
                     }else{
                         console.log("Nenhuma nota encontrada")
@@ -31,8 +33,9 @@ function ApuracaoService() {
 
 function run(notas, lote){
     console.log("Runing...")
-
-    notas.sort(notasCompare)
+    var deferred = Q.defer();
+    var queue = [];
+//    notas.sort(notasCompare)
 
     var dataEmi = parseToDate(notas[0].nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
     var apuracao = createApuracao( notas[0].nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0], dataEmi, lote);
@@ -54,11 +57,8 @@ function run(notas, lote){
                     apuracao.frete =  apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
                     apuracao.icms = apuracao.icms.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
                     apuracao.qtdNotas++;
-                    new SelicService().consultar(new Date(dataEmissao),icms,function(valor){
-                        console.log("icms:",icms.toString()," corrigido:", valor.toString())
-                        //TODO Isso aqui vai dar merda?
-                        apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(valor);
-                    });
+                    queue.push(Q.fcall(corrigirICMS, dataEmissao, icms));
+
                 }else{
                     saveApuracao(apuracao);
                     console.log("Novo trimestre:", trimestre)
@@ -73,10 +73,23 @@ function run(notas, lote){
 
     });
 
+    Q.all(queue).then(function () {
+        salvar(function(){
+            console.log("salvou");
+            deferred.resolve();
+        })
+    });
+
     console.log("Finish...")
     saveApuracao(apuracao);
 }
 
+function corrigirICMS(data, icms){
+    new SelicService().consultar(new Date(dataEmissao),icms,function(valor){
+        console.log("icms:",icms.toString()," corrigido:", valor.toString())
+        apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(valor);
+    });
+}
 
 function saveApuracao(apuracao){
     console.log("CNPJ:",apuracao.cnpj);
@@ -125,7 +138,7 @@ function createApuracao(cnpj, dataEmissao, lote){
 function parseToDate(sdate){
     console.log(sdate)
     var date = moment(sdate, "YYYY-MM-DD");
-    return date.compa
+    return date
 }
 
 /**

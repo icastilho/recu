@@ -9,7 +9,6 @@
 module.exports = {
 
   attributes: {
-    nome: 'string',
     lote: 'string'
   	/* e.g.
   	nickname: 'string'
