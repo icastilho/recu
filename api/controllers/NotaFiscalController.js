@@ -18,7 +18,7 @@
 var fs = require('fs-extra');
 var util = require('util');
 var Q = require('q');
-var UploadService = require('../services/UploadService.js');
+var UploadJob = require('../services/UploadJob.js');
 var Busboy = require('busboy');
 
 
@@ -170,6 +170,15 @@ module.exports = {
 
             res.json({process: 'received upload:'});
         });
+
+    },
+
+    forceupload: function (req, res) {
+        var service = new UploadJob();
+
+        service.processarArquivos();
+
+        res.json({msg: "OK"});
 
     },
     /**
