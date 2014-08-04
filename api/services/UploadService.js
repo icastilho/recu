@@ -119,20 +119,22 @@ function validarXml(notaJson) {
 
 function classificar(notaJson) {
     var nota = JSON.stringify(notaJson);
-
     if (S(nota).contains('procCancNFe')) {
         loteUpload.totalCancelamento++;
-    }
+    }else {
+        //TODO tratar aqruivos que nao contenham NFe
+        //TODO descobrir que tipo de arquivo nao tem NFe
+        if(S(nota).contains('nfeProc')) {
+            var natOp = notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0];
 
+            if (S(natOp).contains('VENDA')) {
+                loteUpload.totalCredito++;
+            }
 
-    var natOp = notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0];
-
-    if (S(natOp).contains('VENDA')) {
-        loteUpload.totalCredito++;
-    }
-
-    if (S(natOp).contains('REMESSA')) {
-        loteUpload.totalRemessa++;
+            if (S(natOp).contains('REMESSA')) {
+                loteUpload.totalRemessa++;
+            }
+        }
     }
 
 }

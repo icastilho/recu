@@ -14,6 +14,7 @@ module.exports = {
   	nickname: 'string'
   	*/
     
-  }
+  },
+  tipo: 'string'
 
 };

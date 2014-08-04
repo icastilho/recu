@@ -1,6 +1,10 @@
 module.exports = {
     attributes: {
-        nome: 'string',
+        nome: {
+            type: 'string',
+            unique: true,
+            required: true
+        },
         notas: 'array',
         chavesDuplicadas: 'array',
         arquivo: 'binary',
@@ -11,6 +15,5 @@ module.exports = {
         naoSaoNotas: 'integer',
         duplicadas: 'integer',
         status: 'string'
-
     }
 };
