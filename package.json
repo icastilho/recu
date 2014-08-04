@@ -41,7 +41,9 @@
     "split": "^0.3.0",
     "string": "^1.9.0",
     "underscore": "^1.6.0",
-    "xml2js": "~0.4.4"
+    "xml2js": "~0.4.4",
+    "colors": "~0.6.2",
+    "scribe": "git+https://github.com/bluejamesbond/Scribe.js.git"
   },
   "scripts": {
     "start": "node app.js",

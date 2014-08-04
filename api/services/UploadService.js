@@ -44,7 +44,7 @@ UploadService.prototype.processarArquivos = function () {
 UploadService.prototype.upload = function (file, filename) {
     var deferred = Q.defer();
 
-    console.log("arquivo " + filename + " inicio processamento.");
+    console.low("arquivo " + filename + " inicio processamento.");
     loteUpload.nome = filename;
     var zip = new AdmZip(file);
     var dir = '.tmp/zips/';

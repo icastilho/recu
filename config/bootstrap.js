@@ -13,6 +13,7 @@ var CronJob = require('cron').CronJob;
 var SelicService = require('../api/services/SelicService.js');
 var service = new SelicService();
 var moment = require('moment');
+var colors = require('colors');
 
 
 module.exports.bootstrap = function (cb) {
@@ -20,16 +21,13 @@ module.exports.bootstrap = function (cb) {
     moment.lang('pt');
     var upload = new UploadJob();
 
-/*    new CronJob('*//*10 * * * * *', function(){
-        console.log("Processando Arquivos ... ");
+    new CronJob('0 * * * * *', function(){
+        console.info("Processando Arquivos ... ".green);
 
         upload.processarArquivos();
-    }, null, true, "America/Sao_Paulo");*/
-/*
-    service.atualizarSelic();
+    }, null, true, "America/Sao_Paulo");
 
-     new CronJob('* *//*
-*/
+
 /*
      5 * * * *', function(){
      console.log("Atualizando Selic");

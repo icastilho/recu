@@ -1,5 +1,6 @@
 var fs = require('fs'),
     Q = require('q'),
+    colors = require('colors'),
     UploadService = require('./UploadService');
 
 function UploadJob(){
@@ -8,7 +9,12 @@ function UploadJob(){
         var dir = '.tmp/uploads';
 
         fs.readdir(dir, function (err, files) {
-            if (err) throw err;
+            if (err) {
+                console.high("[UPLOAD] Não foi possível ler o diretório de uploads ".underline.red);
+                console.trace(err);
+
+                return;
+            }
 
             files.forEach(function (file) {
                 var uploadService = new UploadService();
