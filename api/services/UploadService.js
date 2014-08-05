@@ -4,7 +4,8 @@ var fs = require('fs-extra'),
     S = require('string'),
     path = require('path'),
     AdmZip = require('adm-zip'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    d = require('domain').create();
 
 
 var loteUpload;
@@ -36,6 +37,9 @@ UploadService.prototype.processarArquivos = function () {
             Q.fcall(self.upload, dir + '/' + file, file).
                 then(function () {
                     fs.unlinkSync(dir + '/' + file);
+                }).
+                fail(function (err) {
+                    console.high(err);
                 });
         });
     });
@@ -44,27 +48,35 @@ UploadService.prototype.processarArquivos = function () {
 UploadService.prototype.upload = function (file, filename) {
     var deferred = Q.defer();
 
-    console.low("arquivo " + filename + " inicio processamento.");
+    console.info("[Upload]arquivo " + filename + " inicio processamento.");
     loteUpload.nome = filename;
+
     var zip = new AdmZip(file);
     var dir = '.tmp/zips/';
     var queue = [];
 
-    zip.extractAllTo(dir, true);
-    console.log("extract to... : ", dir)
-    var files = fs.readdirSync(dir);
-
-    files.forEach(function (file) {
-        if (invalidarArquivo(file)) return;
-        queue.push(Q.fcall(parsearArquivo, dir + file));
+    d.on('error', function (err) {
+        return deferred.reject("[Upload]Não foi possível processar o arquivo zip: " + filename + "error: " + err.messagev);
     });
 
-    Q.all(queue).then(function () {
-        salvar(function(){
-            console.log("salvou");
-            deferred.resolve();
-        })
+    d.run(function () {
+        zip.extractAllTo(dir, true);
+        var files = fs.readdirSync(dir);
+
+        files.forEach(function (file) {
+            if (invalidarArquivo(file)) return;
+            queue.push(Q.fcall(parsearArquivo, dir + file));
+        });
+
+        Q.all(queue).then(function () {
+            salvar(function () {
+                console.low("LoteUpload Salvo...");
+                deferred.resolve();
+            })
+        });
     });
+
+
     return deferred.promise;
 }
 
@@ -72,7 +84,7 @@ function parsearArquivo(path) {
     var deferred = Q.defer();
     var parser = new xml2js.Parser({attrkey: '@'});
 
-    console.log("parseando arquivo: " + path);
+    console.low("[Upload]parseando arquivo: " + path);
 
     fs.readFile(path, function (error, data) {
         parser.parseString(data, function (err, nota) {
@@ -99,12 +111,10 @@ function validarXml(notaJson) {
         ChaveNota.find()
             .where({chave: chNFe})
             .exec(function (err, chave) {
-                if(chave.length == 0){
+                if (chave.length == 0) {
                     loteUpload.notas.push(notaJson);
-                    console.log("pos push lenth:",loteUpload.notas.length)
                     loteUpload.total++;
-                } else{
-                    console.log("Nota Duplicada " + chave[0].chave);
+                } else {
                     loteUpload.chavesDuplicadas.push(notaJson);
                     notaJson = "DUPLICADA";
                     loteUpload.duplicadas++;
@@ -119,12 +129,13 @@ function validarXml(notaJson) {
 
 function classificar(notaJson) {
     var nota = JSON.stringify(notaJson);
+
     if (S(nota).contains('procCancNFe')) {
         loteUpload.totalCancelamento++;
-    }else {
+    } else {
         //TODO tratar aqruivos que nao contenham NFe
         //TODO descobrir que tipo de arquivo nao tem NFe
-        if(S(nota).contains('nfeProc')) {
+        if (S(nota).contains('nfeProc')) {
             var natOp = notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0];
 
             if (S(natOp).contains('VENDA')) {
@@ -140,12 +151,12 @@ function classificar(notaJson) {
 }
 
 function salvar(callback) {
-    console.log("loteUpload saving...")
+    console.low("Salvando LoteUpload...");
+
+
     LoteUpload.create(loteUpload).exec(function (err, lote) {
         if (err)     console.log(err);
-        else     {
-            console.log("loteUpload saved, notas:", loteUpload.notas.length)
-            console.log("lote saved, notas:", lote.notas.length)
+        else {
             _.each(loteUpload.notas, function (nota) {
                 nota.lote = loteUpload.nome;
                 var chaveNota = {

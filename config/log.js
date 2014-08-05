@@ -26,10 +26,10 @@ scribe.addLogger('info', true, true, 'cyan');
 
 
 
-module.exports = {
-    express: {
-        customMiddleware: function (app) {
-            app.get('/log', scribe.express.controlPanel());
-        }
-    }
-};
+//module.exports = {
+//    express: {
+//        customMiddleware: function (app) {
+//            app.get('/log', scribe.express.controlPanel());
+//        }
+//    }
+//};

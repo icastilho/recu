@@ -2,7 +2,8 @@ var passport = require('passport'),
     _ = require('underscore'),
     UserAppStrategy = require('passport-userapp').Strategy,
     S = require('string'),
-    users = [];
+    users = [],
+    scribe = require('scribe');
 
 // Passport session setup
 passport.serializeUser(function (user, done) {
@@ -45,6 +46,7 @@ module.exports = {
     customMiddleware: function (app) {
       app.use(passport.initialize());
       app.use(passport.session());
+      app.get('/log', scribe.express.controlPanel());
     }
   }
 };
