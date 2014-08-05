@@ -28,12 +28,11 @@ module.exports.bootstrap = function (cb) {
     }, null, true, "America/Sao_Paulo");
 
 
-/*
-     5 * * * *', function(){
-     console.log("Atualizando Selic");
-     service.atualizarSelic();
-     }, null, true, "America/Sao_Paulo");
-*/
+    new CronJob('0 0 5 * * *', function(){
+        console.info("Atualizando Selic... ".green);
+
+        service.atualizarSelic();
+    }, null, true, "America/Sao_Paulo");
 
 
   // It's very important to trigger this callack method when you are finished 

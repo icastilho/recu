@@ -93,6 +93,7 @@ function parsearArquivo(path) {
                 Q.fcall(validarXml, nota)
                  .then(classificar)
                  .then(function(nota){
+                    fs.unlinkSync(path);
                     deferred.resolve(nota);
                  });
             }
@@ -159,7 +160,6 @@ function classificar(notaJson) {
             notaJson.tipo = 'OUTROS';
         }
     }
-
 }
 
 function salvar(callback) {
