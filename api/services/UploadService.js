@@ -140,6 +140,7 @@ function UploadService() {
 
       if (S(nota).contains('procCancNFe')) {
          loteUpload.totalCancelamento++;
+
          notaJson.tipo = 'CANCELAMENTO';
       } else {
          if (S(nota).contains('nfeProc')) {
