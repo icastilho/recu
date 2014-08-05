@@ -26,8 +26,7 @@ module.exports = {
         req.file('file').upload(function (err, files) {
             if (err)
                 return res.serverError(err);
-            console.log("received upload:")
-            new UploadJob().processarArquivos();
+
             res.json({process: 'received upload:'});
         });
 

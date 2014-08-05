@@ -91,9 +91,11 @@ function parsearArquivo(path) {
             if (err) {
                 deferred.reject(err);
             } else {
-                validarXml(nota);
-                classificar(nota);
-                deferred.resolve(nota);
+                Q.fcall(validarXml, nota)
+                 .then(classificar)
+                 .then(function(nota){
+                    deferred.resolve(nota);
+                 });
             }
         });
     });
@@ -105,6 +107,9 @@ function invalidarArquivo(path) {
 }
 
 function validarXml(notaJson) {
+
+    var deferred = Q.defer();
+
     if (notaJson != undefined && notaJson.nfeProc != undefined) {
         var chNFe = notaJson.nfeProc.protNFe[0].infProt[0].chNFe[0];
 
@@ -119,12 +124,16 @@ function validarXml(notaJson) {
                     notaJson = "DUPLICADA";
                     loteUpload.duplicadas++;
                 }
+
+                deferred.resolve(notaJson);
             });
-        return notaJson;
+
     } else {
         loteUpload.naoSaoNotas++;
+        deferred.resolve("");
     }
 
+    return deferred.promise;
 }
 
 function classificar(notaJson) {
