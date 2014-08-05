@@ -5,6 +5,8 @@ var fs = require('fs'),
 
 function UploadJob(){
     this.processarArquivos = function () {
+        console.info("Processando Arquivos ... ".green);
+
         var self = this;
         var dir = '.tmp/uploads';
 

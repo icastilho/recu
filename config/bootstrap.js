@@ -21,12 +21,6 @@ module.exports.bootstrap = function (cb) {
     moment.lang('pt');
     var upload = new UploadJob();
 
-    new CronJob('0 * * * * *', function(){
-        console.info("Processando Arquivos ... ".green);
-
-        upload.processarArquivos();
-    }, null, true, "America/Sao_Paulo");
-
 
     new CronJob('0 0 5 * * *', function(){
         console.info("Atualizando Selic... ".green);

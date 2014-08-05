@@ -14,6 +14,7 @@
  *
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
+var UploadJob = require("../services/UploadJob.js");
 
 module.exports = {
 
@@ -27,6 +28,7 @@ module.exports = {
             if (err)
                 return res.serverError(err);
 
+            new UploadJob().processarArquivos();
             res.json({process: 'received upload:'});
         });
 
