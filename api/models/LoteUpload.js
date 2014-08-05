@@ -14,6 +14,7 @@ module.exports = {
         totalRemessa: 'integer',
         naoSaoNotas: 'integer',
         duplicadas: 'integer',
+        outros: 'integer',
         status: 'string'
     }
 };

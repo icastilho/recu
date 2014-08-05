@@ -9,12 +9,9 @@
 module.exports = {
 
   attributes: {
-    lote: 'string'
-  	/* e.g.
-  	nickname: 'string'
-  	*/
-    
-  },
-  tipo: 'string'
+    lote: 'string',
+    chave: 'string',
+    tipo: 'string'
 
+  }
 };

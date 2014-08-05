@@ -22,6 +22,7 @@ function UploadService() {
         naoSaoNotas: 0,
         chavesDuplicadas: [],
         duplicadas: 0,
+        outros: 0,
         status: 'Novo'
     };
 }
@@ -111,10 +112,10 @@ function validarXml(notaJson) {
     if (notaJson != undefined && notaJson.nfeProc != undefined) {
         var chNFe = notaJson.nfeProc.protNFe[0].infProt[0].chNFe[0];
 
-        ChaveNota.find()
+        NotaFiscal.find()
             .where({chave: chNFe})
-            .exec(function (err, chave) {
-                if (chave.length == 0) {
+            .exec(function (err, nota) {
+                if (nota.length == 0) {
                     loteUpload.notas.push(notaJson);
                     loteUpload.total++;
                 } else {
@@ -141,8 +142,6 @@ function classificar(notaJson) {
         loteUpload.totalCancelamento++;
         notaJson.tipo = 'CANCELAMENTO';
     } else {
-        //TODO tratar aqruivos que nao contenham NFe
-        //TODO descobrir que tipo de arquivo nao tem NFe
         if (S(nota).contains('nfeProc')) {
             var natOp = notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0];
 
@@ -155,6 +154,9 @@ function classificar(notaJson) {
                 loteUpload.totalRemessa++;
                 notaJson.tipo = 'REMESSA';
             }
+        }else{
+            loteUpload.outros++;
+            notaJson.tipo = 'OUTROS';
         }
     }
 
@@ -170,13 +172,7 @@ function salvar(callback) {
         else {
             _.each(loteUpload.notas, function (nota) {
                 nota.lote = loteUpload.nome;
-                var chaveNota = {
-                    chave: nota.nfeProc.protNFe[0].infProt[0].chNFe[0]
-                };
-
-                ChaveNota.create(chaveNota).exec(function (err, chave) {
-                    if (err)     console.log(err)
-                });
+                nota.chave = nota.nfeProc.protNFe[0].infProt[0].chNFe[0];
 
                 NotaFiscal.create(nota).exec(function (err, nota) {
                     if (err)     console.log(err)
