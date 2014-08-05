@@ -167,10 +167,13 @@ function salvar(callback) {
 
     console.low("Salvando LoteUpload...");
 
+    var notas = loteUpload.notas.slice();
+    loteUpload.notas = [];
+
     LoteUpload.create(loteUpload).exec(function (err, lote) {
         if (err)     console.log(err);
         else {
-            _.each(loteUpload.notas, function (nota) {
+            _.each(notas, function (nota) {
                 nota.lote = loteUpload.nome;
                 nota.chave = nota.nfeProc.protNFe[0].infProt[0].chNFe[0];
 
