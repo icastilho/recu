@@ -37,8 +37,7 @@ UploadService.prototype.processarArquivos = function () {
             Q.fcall(self.upload, dir + '/' + file, file).
                 then(function () {
                     fs.unlinkSync(dir + '/' + file);
-                }).
-                fail(function (err) {
+                }).fail(function (err) {
                     console.high(err);
                 });
         });
@@ -70,7 +69,6 @@ UploadService.prototype.upload = function (file, filename) {
 
         Q.all(queue).then(function () {
             salvar(function () {
-                console.low("LoteUpload Salvo...");
                 deferred.resolve();
             })
         });
@@ -141,6 +139,7 @@ function classificar(notaJson) {
 
     if (S(nota).contains('procCancNFe')) {
         loteUpload.totalCancelamento++;
+        notaJson.tipo = 'CANCELAMENTO';
     } else {
         //TODO tratar aqruivos que nao contenham NFe
         //TODO descobrir que tipo de arquivo nao tem NFe
@@ -149,10 +148,12 @@ function classificar(notaJson) {
 
             if (S(natOp).contains('VENDA')) {
                 loteUpload.totalCredito++;
+                notaJson.tipo = 'VENDA';
             }
 
             if (S(natOp).contains('REMESSA')) {
                 loteUpload.totalRemessa++;
+                notaJson.tipo = 'REMESSA';
             }
         }
     }
@@ -160,8 +161,9 @@ function classificar(notaJson) {
 }
 
 function salvar(callback) {
-    console.low("Salvando LoteUpload...");
+    callback();
 
+    console.low("Salvando LoteUpload...");
 
     LoteUpload.create(loteUpload).exec(function (err, lote) {
         if (err)     console.log(err);
@@ -182,7 +184,7 @@ function salvar(callback) {
 
             });
 
-            callback();
+            console.low("LoteUpload Salvo...");
         }
     });
 }
