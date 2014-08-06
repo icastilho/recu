@@ -27,9 +27,14 @@
 </div>
 
 <div class="row">
-    <div class="col-xs-12" ng-show="selic">
+    <div class="col-xs-6 col-md-4" ng-show="selic">
 
-        <h3>Resultado: </h3> {{selic.valor}}
+       <div class="panel panel-default">
+          <div class="panel-body">
+             <h3>Resultado: </h3> {{selic.valor | currency}}
+          </div>
+       </div>
+
     </div>
 </div>
 
