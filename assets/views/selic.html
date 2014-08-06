@@ -27,12 +27,17 @@
 </div>
 
 <div class="row">
-    <div class="col-xs-6 col-md-4" ng-show="selic">
+    <div class="col-xs-6 col-md-4" ng-show="selic && !carregando">
 
        <div class="well ">
              <h3>Resultado: </h3> {{selic.valor | currency}}
        </div>
 
     </div>
+
+   <div class="col-xs-12" ng-show="carregando">
+      <h1><i class="fa fa-cog fa-spin"></i> Carregando...</h1>
+   </div>
+
 </div>
 
