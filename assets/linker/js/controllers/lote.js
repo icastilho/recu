@@ -1,28 +1,36 @@
 (function() {
    'use strict';
 
-   function LoteController($scope, $http) {
+   function LoteController($scope, $http, $timeout) {
 
       $scope.lotes = [];
 
-      $http.get('/loteupload/view')
-         .success(function(data) {
-            $scope.lotes = data.lotes;
-         });
+
+      $scope.obterLotes = function (){
+         $http.get('/loteupload/view')
+            .success(function(data) {
+               $scope.lotes = data.lotes;
+            });
+      }
+
+      $scope.obterLotes();
 
 
-      $scope.apurar = function(loteName) {
-          console.log('apurar lote:',loteName)
+      $scope.apurar = function(lote) {
+         console.log('apurar lote:', lote.nome);
 
           $http.post('/apuracao/apurar', JSON.stringify({
-              lote: loteName
-          }));
+              lote: lote.nome
+          })).success(function(){
+                lote.status = 'Processando';
+                $timeout($scope.obterLotes, 3000);
+          });
       };
 
    }
 
    angular.module('apura.controllers.lote', [])
-      .controller('LoteCtrl', ['$scope', '$http', LoteController]);
+      .controller('LoteCtrl', ['$scope', '$http', '$timeout', LoteController]);
 
 })();
 

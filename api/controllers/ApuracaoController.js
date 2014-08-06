@@ -36,7 +36,17 @@ module.exports = {
         console.log("Start Apuracao lote:...", req.param("lote"))
 
         new ApuracaoService().apurar(req.param("lote"));
-        res.json({process:"processing..."});
+
+
+       LoteUpload.update({nome: req.param("lote")}, {status: 'Processando'}).exec(function(err, lote){
+          if(err) {
+             console.log("Aeeeee")
+          };
+
+             res.json({status:"Processando"});
+
+       });
+
     },
 
 
