@@ -11,9 +11,9 @@
       <table class="table table-bordered table-striped table-hover">
          <thead>
          <tr>
-            <th width="30%">Nome</th>
+            <th>Nome</th>
             <th>Status</th>
-            <th>Data Criação</th>
+            <th>Data de Criação</th>
             <th>Qtd Credito</th>
             <th>Qtd Cancelamento</th>
             <th>Qtd Remessa</th>
@@ -27,7 +27,7 @@
          <tr ng-repeat="lote in lotes">
             <td>{{lote.nome}}</td>
             <td>{{lote.status}}</td>
-            <td>{{lote.createdAt | date:'dd/mm/yyyy HH:mm'}}</td>
+            <td>{{lote.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
             <td>{{lote.totalCredito}}</td>
             <td>{{lote.totalCancelamento}}</td>
             <td>{{lote.totalRemessa}}</td>
@@ -42,7 +42,7 @@
 
                <a class="btn btn-labeled btn-danger" ng-show="lote.status==='Erro'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
 
-               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='Processando'"> <span class="btn-label"><i class="glyphicon glyphicon-refresh"></i></span>Processando </a>
+               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='Processando'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando </a>
 
             </td>
          </tr>
