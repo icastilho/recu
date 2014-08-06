@@ -4,7 +4,7 @@ var scribe = require('scribe');
 // --------------
 scribe.configure(function(){
     scribe.set('app', 'GFI');                     // NOTE Best way learn about these settings is
-    scribe.set('logPath', './logs'); // Doublecheck       // them out for yourself.
+    scribe.set('logPath', './log'); // Doublecheck       // them out for yourself.
     scribe.set('defaultTag', 'DEFAULT');
     scribe.set('divider', ':::');
     scribe.set('identation', 5);                          // Identation before console messages
