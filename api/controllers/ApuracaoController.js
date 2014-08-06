@@ -15,7 +15,8 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
-var moment = require('moment');
+var moment = require('moment'),
+   color = require('colors');
 
 module.exports = {
 
@@ -40,7 +41,7 @@ module.exports = {
 
        LoteUpload.update({nome: req.param("lote")}, {status: 'Processando'}).exec(function(err, lote){
           if(err) {
-             console.log("Aeeeee")
+             console.log("Error".underline.red, err)
           };
 
              res.json({status:"Processando"});
