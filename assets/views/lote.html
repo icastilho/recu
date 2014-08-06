@@ -7,43 +7,53 @@
 </div>
 
 <div class="row">
-   <div class="col-xs-12">
-
+   <div class="col-xs-12" ng-show="lotes">
       <table class="table table-bordered table-striped table-hover">
          <thead>
-            <tr>
-               <th width="30%">Nome</th>
-               <th>Status</th>
-               <th>Data Criação</th>
-               <th>Qtd Credito</th>
-               <th>Qtd Cancelamento</th>
-               <th>Qtd Remessa</th>
-               <th>Qtd Total</th>
-               <th>Qtd Duplicadas</th>
-               <th>Qtd Outros</th>
-               <th>Ação</th>
-            </tr>
+         <tr>
+            <th>Nome</th>
+            <th>Status</th>
+            <th>Data de Criação</th>
+            <th>Qtd Credito</th>
+            <th>Qtd Cancelamento</th>
+            <th>Qtd Remessa</th>
+            <th>Qtd Total</th>
+            <th>Qtd Duplicadas</th>
+            <th>Qtd Outros</th>
+            <th>Ação</th>
+         </tr>
          </thead>
          <tbody>
-            <tr ng-repeat="lote in lotes">
-               <td>{{lote.nome}}</td>
-               <td>{{lote.status}}</td>
-               <td>{{lote.createdAt}}</td>
-               <td>{{lote.totalCredito}}</td>
-               <td>{{lote.totalCancelamento}}</td>
-               <td>{{lote.totalRemessa}}</td>
-               <td>{{lote.total}}</td>
-               <td>{{lote.duplicadas}}</td>
-               <td>{{lote.naoSaoNotas}}</td>
-               <td nowrap>
-                  <button type="button" class="btn btn-success btn-xs" ng-click="apurar(lote.nome)"
-                          ng-disabled="!lote.status==='Novo'">
-                     <span class="glyphicon glyphicon-upload"></span> Processar
-                  </button>
-               </td>
-            </tr>
+         <tr ng-repeat="lote in lotes">
+            <td>{{lote.nome}}</td>
+            <td>{{lote.status}}</td>
+            <td>{{lote.createdAt | date:'dd/MM/yyyy HH:mm'}}</td>
+            <td>{{lote.totalCredito}}</td>
+            <td>{{lote.totalCancelamento}}</td>
+            <td>{{lote.totalRemessa}}</td>
+            <td>{{lote.total}}</td>
+            <td>{{lote.duplicadas}}</td>
+            <td>{{lote.naoSaoNotas}}</td>
+            <td nowrap>
+
+               <a class="btn btn-labeled btn-primary" ng-show="lote.status==='Novo'" ng-click="apurar(lote)"> <span class="btn-label"><i class="fa fa-play"></i></span>Processar </a>
+
+               <a class="btn btn-labeled btn-success" ng-show="lote.status==='Processado'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Reprocessar </a>
+
+               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='Erro'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
+
+               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='Processando'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando </a>
+
+            </td>
+         </tr>
          </tbody>
       </table>
    </div>
 
+   <div class="col-xs-12" ng-hide="lotes">
+      <h1><i class="fa fa-cog fa-spin"></i> Carregando...</h1>
+   </div>
+
 </div>
+
+

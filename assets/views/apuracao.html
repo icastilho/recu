@@ -1,45 +1,49 @@
-
 <div class="row">
-    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
-        <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-check"></i>Últimos Lotes Apurados <span></span></h1>
-    </div>
+   <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+      <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-check"></i>Últimos Lotes Apurados <span></span>
+      </h1>
+   </div>
 
 </div>
 
 
 <div class="row">
-    <div class="col-xs-12">
+   <div class="col-xs-12" ng-show="apuracoes">
 
-        <table class="table table-bordered table-striped table-hover">
-            <thead>
-            <tr>
-                <th width="30%">CNPJ</th>
-                <th>Ano</th>
-                <th>Trimestre</th>
-                <th>Lote</th>
-                <th>Qtd Notas</th>
-                <th>Total ICMS</th>
-                <th>ICMS Corrigido</th>
-                <th>ICMS Multiplicado</th>
-                <th>Frete</th>
-                <th>Valor Total</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="apuracao in apuracoes">
-                <td>{{apuracao.cnpj}}</td>
-                <td>{{apuracao.ano}}</td>
-                <td>{{apuracao.trimestre}}</td>
-                <td>{{apuracao.lote}}</td>
-                <td>{{apuracao.qtdNotas}}</td>
-                <td>{{apuracao.iCMS}}</td>
-                <td>{{apuracao.iCMSCorrigido}}</td>
-                <td>{{apuracao.iCMSMultiplicado}}</td>
-                <td>{{apuracao.frete}}</td>
-                <td>{{apuracao.valorTotal}}</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+      <table class="table table-bordered table-striped table-hover">
+         <thead>
+         <tr>
+            <th width="30%">CNPJ</th>
+            <th>Ano</th>
+            <th>Trimestre</th>
+            <th>Lote</th>
+            <th>Qtd Notas</th>
+            <th>Total ICMS</th>
+            <th>ICMS Corrigido</th>
+            <th>ICMS Multiplicado</th>
+            <th>Frete</th>
+            <th>Valor Total</th>
+         </tr>
+         </thead>
+         <tbody>
+         <tr ng-repeat="apuracao in apuracoes">
+            <td>{{apuracao.cnpj}}</td>
+            <td>{{apuracao.ano}}</td>
+            <td>{{apuracao.trimestre}}</td>
+            <td>{{apuracao.lote}}</td>
+            <td>{{apuracao.qtdNotas}}</td>
+            <td>{{apuracao.iCMS | currency}}</td>
+            <td>{{apuracao.iCMSCorrigido | currency}}</td>
+            <td>{{apuracao.iCMSMultiplicado | currency}}</td>
+            <td>{{apuracao.frete | currency}}</td>
+            <td>{{apuracao.valorTotal | currency}}</td>
+         </tr>
+         </tbody>
+      </table>
+   </div>
+
+   <div class="col-xs-12" ng-hide="apuracoes">
+      <h1><i class="fa fa-cog fa-spin"></i> Carregando...</h1>
+   </div>
 
 </div>

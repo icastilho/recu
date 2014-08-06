@@ -26,11 +26,11 @@ module.exports.connections = {
 
   mongo: {
     adapter   : 'sails-mongo',
-     host: 'dbh75.mongolab.com',
-     port: 27757,
-     user: 'recut',
-     password: 'recut',
-     database: 'heroku_app19033587'
+     host: 'kahana.mongohq.com',
+     port: 10033,
+     user: 'admin',
+     password: 'admin',
+     database: 'app27533068'
   }
 //    mongo: {
 //        module: 'sails-mongo',

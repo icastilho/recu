@@ -45,7 +45,7 @@ function UploadService() {
    this.upload = function (file, filename) {
       var deferred = Q.defer();
 
-      console.info("[Upload]arquivo " + filename + " inicio processamento.");
+      console.log("[Upload]arquivo " + filename + " inicio processamento.");
       loteUpload.nome = filename;
 
       var zip = new AdmZip(file);
@@ -81,7 +81,7 @@ function UploadService() {
       var deferred = Q.defer();
       var parser = new xml2js.Parser({attrkey: '@'});
 
-      console.low("[Upload]parseando arquivo: " + path);
+      console.log("[Upload]parseando arquivo: " + path);
 
       fs.readFile(path, function (error, data) {
          parser.parseString(data, function (err, nota) {
@@ -140,6 +140,7 @@ function UploadService() {
 
       if (S(nota).contains('procCancNFe')) {
          loteUpload.totalCancelamento++;
+
          notaJson.tipo = 'CANCELAMENTO';
       } else {
          if (S(nota).contains('nfeProc')) {
@@ -164,7 +165,7 @@ function UploadService() {
    function salvar(callback) {
       callback();
 
-      console.low("Salvando LoteUpload...");
+      console.log("Salvando LoteUpload...");
 
       var notas = loteUpload.notas.slice();
       loteUpload.notas = [];
@@ -182,7 +183,7 @@ function UploadService() {
 
             });
 
-            console.low("LoteUpload Salvo...");
+            console.log("LoteUpload Salvo...");
          }
       });
    }
