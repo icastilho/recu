@@ -12,7 +12,7 @@ function UploadJob(){
 
         fs.readdir(dir, function (err, files) {
             if (err) {
-                console.high("[UPLOAD] Não foi possível ler o diretório de uploads ".underline.red);
+                console.log("[UPLOAD] Não foi possível ler o diretório de uploads ".underline.red);
                 console.trace(err);
 
                 return;

@@ -80,6 +80,7 @@ var jsFilesToInject = [
    'linker/js/libs/angular/angular-route.js',
    'linker/js/libs/angular/angular-animate.js',
    'linker/js/libs/angular/angular-ui-router.js',
+   'linker/js/libs/angular/angular-locale_pt-br.js',
    'linker/js/angular-file-upload/angular-file-upload.min.js',
    'linker/js/libs/angular/ui-bootstrap-custom-tpls-0.11.0.js',
 
