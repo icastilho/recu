@@ -15,10 +15,10 @@
 <!-- end user info -->
 
 <navigation>
-   <nav:item data-view="/dashboard" data-icon="fa fa-lg fa-fw fa-home" title="Home" />
-   <nav:item data-view="/home/upload" data-icon="fa fa-lg fa-fw fa-cloud-upload" title="Enviar Lotes" data-ng-if="user.hasPermission('admin')" />
-   <nav:item data-view="/home/lote" data-icon="fa fa-lg fa-fw fa-list-ul" title="Listar Lotes" data-ng-if="user.hasPermission('admin')" />
-   <nav:item data-view="/home/apuracao" data-icon="fa fa-lg fa-fw fa-check" title="Lotes Apurados" data-ng-if="user.hasPermission('admin')" />
-   <nav:item data-view="/home/selic" data-icon="fa fa-lg fa-fw fa-files-o" title="Consultar Selic" data-ng-if="user.hasPermission('admin')" />
+   <nav:item data-view="/dashboard" data-icon="fa fa-lg fa-fw fa-home" title="Home" permission="user" />
+   <nav:item data-view="/home/upload" data-icon="fa fa-lg fa-fw fa-cloud-upload" title="Enviar Lotes" permission="admin" />
+   <nav:item data-view="/home/lote" data-icon="fa fa-lg fa-fw fa-list-ul" title="Listar Lotes" permission="admin" />
+   <nav:item data-view="/home/apuracao" data-icon="fa fa-lg fa-fw fa-check" title="Lotes Apurados" permission="admin" />
+   <nav:item data-view="/home/selic" data-icon="fa fa-lg fa-fw fa-files-o" title="Consultar Selic" permission="admin" />
 </navigation>
 <span class="minifyme" data-action="minifyMenu"> <i class="fa fa-arrow-circle-left hit"></i> </span>

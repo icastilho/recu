@@ -662,11 +662,12 @@ angular.module('app.navigation', [])
 				icon: '@',
 				iconCaption: '@',
 				href: '@',
-				target: '@'
+				target: '@',
+            permission: '@'
 			},
 			link: function(scope, element, attrs, parentCtrls) {
 				var navCtrl = parentCtrls[0],
-					navgroupCtrl = parentCtrls[1]
+					navgroupCtrl = parentCtrls[1];
 
 				scope.$watch('active', function(newVal, oldVal) {
 					if (newVal) {
@@ -680,7 +681,7 @@ angular.module('app.navigation', [])
 
 				scope.openParents = scope.isActive(scope.view);
 				scope.isChild = angular.isDefined(navgroupCtrl);
-				
+
 				scope.setBreadcrumb = function() {
 	    			var crumbs = [];
 	    			crumbs.push(scope.title);
@@ -710,7 +711,7 @@ angular.module('app.navigation', [])
 			transclude: true,
 			replace: true,
 			template: '\
-				<li data-ng-class="{active: isActive(view)}">\
+				<li data-ng-class="{active: isActive(view)}" ua-has-permission="{{permission}}">\
 					<a href="{{ getItemUrl(view) }}" target="{{ getItemTarget() }}" title="{{ title }}">\
 						<i data-ng-if="hasIcon" class="{{ icon }}"><em data-ng-if="hasIconCaption"> {{ iconCaption }} </em></i>\
 						<span ng-class="{\'menu-item-parent\': !isChild}" data-localize="{{ title }}"> {{ title }} </span>\
