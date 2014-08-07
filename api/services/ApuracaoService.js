@@ -69,7 +69,16 @@ function ApuracaoService() {
             //TODO implementar tratamento para CNPJ diferentes econtrados
          } else {
             var dataEmissao = parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
-            var ano = dataEmissao.year();
+            var mes = dataEmissao.month();
+
+            if (apuracao.mes != mes) {
+               apurarValores(apuracao, nfes);
+               console.log("Novo mes:", mes);
+               apuracao = createApuracao(apuracao.cnpj, dataEmissao, lote);
+               nfes = [];
+            }
+
+            /*var ano = dataEmissao.year();
             if (apuracao.ano == ano) {
                var trimestre = dataEmissao.quarter();
                if (apuracao.trimestre != trimestre) {
@@ -83,7 +92,8 @@ function ApuracaoService() {
                console.log("Novo ano :", ano)
                apuracao = createApuracao(apuracao.cnpj, dataEmissao, lote);
                nfes = [];
-            }
+            }*/
+            apuracao.qtdNotas++;
             nfes.push(nota);
          }
 
@@ -120,7 +130,6 @@ function ApuracaoService() {
          apuracao.frete = apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
          apuracao.iCMS = apuracao.iCMS.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
          queue.push(Q.fcall(corrigirICMS, dataEmissao, iCMS));
-         apuracao.qtdNotas++;
       });
 
       Q.all(queue).then(function (results) {
@@ -130,7 +139,7 @@ function ApuracaoService() {
          });
 
          saveApuracao(apuracao, function () {
-            console.log("Saved!!!");
+            console.log("Saved!!! month: ", apuracao.mes);
             console.log("qtdNotas", nfes.length);
             deferred.resolve();
          });
@@ -149,7 +158,7 @@ function ApuracaoService() {
       var deferred = Q.defer();
       new SelicService().consultar(new Date(dataEmissao), iCMS, function (valor) {
          deferred.resolve(valor);
-         console.log("iCMS: ", iCMS.toString(), " valor corrigido: ", valor.toString())
+//         console.log("iCMS: ", iCMS.toString(), " valor corrigido: ", valor.toString())
       });
 
       return   deferred.promise;
@@ -160,7 +169,7 @@ function ApuracaoService() {
 
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
-      apuracao.iCMSMultiplicado = apuracao.iCMSCorrigido.times(3.65).toString();
+      apuracao.recuperar = apuracao.iCMSCorrigido.times(0.0925).minus(0.01).toString();
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
       console.log("Saving apuracao...")
@@ -189,11 +198,12 @@ function ApuracaoService() {
          cnpj: cnpj,
          ano: dataEmissao.year(),
          trimestre: dataEmissao.quarter(),
+         mes: dataEmissao.month(),
          lote: lote,
          qtdNotas: 0,
          iCMS: BigNumber(0),
          iCMSCorrigido: BigNumber(0),
-         iCMSMultiplicado: BigNumber(0),
+         recuperar: BigNumber(0),
          frete: BigNumber(0),
          valorTotal: BigNumber(0)
       }

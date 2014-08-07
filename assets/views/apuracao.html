@@ -13,16 +13,17 @@
       <table class="table table-bordered table-striped table-hover">
          <thead>
          <tr>
-            <th width="30%">CNPJ</th>
+            <th width="10%">CNPJ</th>
             <th>Ano</th>
             <th>Trimestre</th>
+            <th>Mês</th>
             <th>Lote</th>
             <th>Qtd Notas</th>
             <th>Total ICMS</th>
             <th>ICMS Corrigido</th>
-            <th>ICMS Multiplicado</th>
             <th>Frete</th>
             <th>Valor Total</th>
+            <th>Valor a Recuperar</th>
          </tr>
          </thead>
          <tbody>
@@ -30,13 +31,14 @@
             <td>{{apuracao.cnpj}}</td>
             <td>{{apuracao.ano}}</td>
             <td>{{apuracao.trimestre}}</td>
+            <td>{{apuracao.mes}}</td>
             <td>{{apuracao.lote}}</td>
             <td>{{apuracao.qtdNotas}}</td>
             <td>{{apuracao.iCMS | currency}}</td>
             <td>{{apuracao.iCMSCorrigido | currency}}</td>
-            <td>{{apuracao.iCMSMultiplicado | currency}}</td>
             <td>{{apuracao.frete | currency}}</td>
             <td>{{apuracao.valorTotal | currency}}</td>
+            <td>{{apuracao.recuperar | currency}}</td>
          </tr>
          </tbody>
       </table>

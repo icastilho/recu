@@ -12,10 +12,11 @@ module.exports = {
   	cnpj:"string",
     ano:"integer",
     trimestre: "integer",
+    mes:"integer",
     lote: "string",
     iCMS: "string",
     iCMSCorrigido: "string",
-    iCMSMultiplicado: "string",
+    recuperar: "string",
     frete: "string",
     valorTotal: "string",
     qtdNotas: "integer"
