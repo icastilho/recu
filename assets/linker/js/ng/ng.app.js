@@ -39,22 +39,34 @@ angular
          .state('home.upload', {
             url: '/upload',
             templateUrl: 'views/upload.html',
-            controller: 'FileUploadCtrl'
+            controller: 'FileUploadCtrl',
+            data: {
+               hasPermission: 'admin'
+            }
          })
          .state('home.lote', {
             url: '/lote',
             templateUrl: 'views/lote.html',
-            controller: 'LoteCtrl'
+            controller: 'LoteCtrl',
+            data: {
+               hasPermission: 'admin'
+            }
          })
           .state('home.selic', {
               url: '/selic',
               templateUrl: 'views/selic.html',
-              controller: 'SelicCtrl'
+              controller: 'SelicCtrl',
+              data: {
+                  hasPermission: 'admin'
+              }
           })
           .state('home.apuracao', {
               url: '/apuracao',
               templateUrl: 'views/apuracao.html',
-              controller: 'ApuracaoCtrl'
+              controller: 'ApuracaoCtrl',
+              data: {
+                  hasPermission: 'admin'
+              }
           })
          .state('auth', {
             url: "/auth",

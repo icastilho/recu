@@ -1,5 +1,8 @@
 module.exports = function(req, res, next) {
 
+//   req.user.permissions.admin.value
+
+
   if (req.isAuthenticated())
     return next();
 
