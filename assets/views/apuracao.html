@@ -21,9 +21,9 @@
             <th>Qtd Notas</th>
             <th>Total ICMS</th>
             <th>ICMS Corrigido</th>
+            <th>Valor a Recuperar</th>
             <th>Frete</th>
             <th>Valor Total</th>
-            <th>Valor a Recuperar</th>
          </tr>
          </thead>
          <tbody>
@@ -36,9 +36,9 @@
             <td>{{apuracao.qtdNotas}}</td>
             <td>{{apuracao.iCMS | currency}}</td>
             <td>{{apuracao.iCMSCorrigido | currency}}</td>
+            <td>{{apuracao.recuperar | currency}}</td>
             <td>{{apuracao.frete | currency}}</td>
             <td>{{apuracao.valorTotal | currency}}</td>
-            <td>{{apuracao.recuperar | currency}}</td>
          </tr>
          </tbody>
       </table>
