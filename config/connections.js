@@ -14,7 +14,7 @@
  * in `config/local.js`, environment variables, or use another strategy.
  * (this is to prevent you inadvertently sensitive credentials up to your repository.)
  *
- * For more information on configuration, check out:
+ * For more information on configuration, check out:ee
  * http://links.sailsjs.org/docs/config/connections
  */
 
@@ -24,11 +24,11 @@ module.exports.connections = {
       adapter: 'sails-disk'
    },
 
-   localMongo: {
-      adapter: 'sails-mongo',
-      host: 'localhost',
-      port: 27017
-   },
+//   localMongo: {
+//      adapter: 'sails-mongo',
+//      host: 'localhost',
+//      port: 27017
+//   },
 
    mongo: {
       adapter: 'sails-mongo',
