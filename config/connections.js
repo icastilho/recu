@@ -24,11 +24,11 @@ module.exports.connections = {
       adapter: 'sails-disk'
    },
 
-//   localMongo: {
-//      adapter: 'sails-mongo',
-//      host: 'localhost',
-//      port: 27017
-//   },
+   localMongo: {
+      adapter: 'sails-mongo',
+      host: 'localhost',
+      port: 27017
+   },
 
    mongo: {
       adapter: 'sails-mongo',
