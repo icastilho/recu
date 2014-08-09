@@ -46,9 +46,6 @@ function ApuracaoService() {
                   });
             }
          });
-
-
-
    }
 
 
@@ -65,15 +62,13 @@ function ApuracaoService() {
 
          var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
          if (cnpj != apuracao.cnpj) {
-            console.error("CNPJ diferente encontrado no Lote", cnpj)
+            console.error("CNPJ diferente encontrado no Lote", cnpj);
             //TODO implementar tratamento para CNPJ diferentes econtrados
          } else {
             var dataEmissao = parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
-            var mes = dataEmissao.month();
-
+            var mes = dataEmissao.format("MMMM");
             if (apuracao.mes != mes) {
                apurarValores(apuracao, nfes);
-               console.log("Novo mes:", mes);
                apuracao = createApuracao(apuracao.cnpj, dataEmissao, lote);
                nfes = [];
             }
@@ -111,6 +106,8 @@ function ApuracaoService() {
 
    }
 
+
+
    /**
     * Soma os valores das notas
     * @param apuracao
@@ -118,7 +115,7 @@ function ApuracaoService() {
     * @returns {*}
     */
    function apurarValores(apuracao, nfes) {
-      console.log("Apurando valores...")
+      console.log("Apurando valores...");
 
       var deferred = Q.defer();
       var queue = [];
@@ -129,13 +126,17 @@ function ApuracaoService() {
          apuracao.valorTotal = apuracao.valorTotal.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
          apuracao.frete = apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
          apuracao.iCMS = apuracao.iCMS.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
-         queue.push(Q.fcall(corrigirICMS, dataEmissao, iCMS));
+         var n = {dataEmissao: dataEmissao,iCMS:iCMS };
+         queue.push(Q.fcall(corrigirICMS, n));
       });
 
       Q.all(queue).then(function (results) {
-         results.forEach(function (result) {
-            console.log(result.toString());
-            apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(result)
+         results.forEach(function (nota) {
+            apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(nota.iCMSCorrigido);
+            var juros = nota.juros.times(nota.qtdDias);
+            console.log("juros: ", nota.juros.toString(), " dias:", nota.qtdDias, " valor: ", juros.toString());
+
+            apuracao.juros = apuracao.juros.plus(juros);
          });
 
          saveApuracao(apuracao, function () {
@@ -144,9 +145,21 @@ function ApuracaoService() {
             deferred.resolve();
          });
       });
-      console.log("Finalizando apuracao...")
+      console.log("Finalizando apuracao...");
       return deferred.promise;
    }
+
+
+   /**
+    *   Variaveis globais de calculo
+    */
+   function staticJuros(){
+      return 0.0033;
+   }
+   function staticDarf(){
+      return  0.0925;
+   }
+
 
    /**
     * Atualiza valor de ICMS com baseado na selic
@@ -154,22 +167,45 @@ function ApuracaoService() {
     * @param iCMS
     * @returns {*}
     */
-   function corrigirICMS(dataEmissao, iCMS) {
+   function corrigirICMS(nota) {
       var deferred = Q.defer();
-      new SelicService().consultar(new Date(dataEmissao), iCMS, function (valor) {
-         deferred.resolve(valor);
+
+      new SelicService().consultar(new Date(nota.dataEmissao), nota.iCMS, function (valor) {
+         nota.iCMSCorrigido = valor;
+
+         var today =  moment(new Date());
+         nota.qtdDias = today.diff(nota.dataEmissao, 'days')
+         nota.juros = nota.iCMSCorrigido.times(staticJuros())
+         console.log("iCMSCorrigido: ",  nota.iCMSCorrigido.toString(), " valor juros", nota.juros.toString())
+         deferred.resolve(nota);
 //         console.log("iCMS: ", iCMS.toString(), " valor corrigido: ", valor.toString())
       });
 
       return   deferred.promise;
    }
 
+   /**
+    * Aplica juros sobre o iCMS
+    * Regra01
+    * @param nota
+    */
+   function aplicarJuros(nota){
+      var deferred = Q.defer();
+
+      var start = moment(nota.dataEmissao);
+      var today =  moment(new Date());
+      nota.qtdDias = start.diff(today, 'days')
+      nota.juros = nota.iCMSCorrigido.times(staticJuros())
+
+      deferred.resolve(nota);
+      return   deferred.promise;
+   }
+
    function saveApuracao(apuracao, callback) {
-
-
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
-      apuracao.recuperar = apuracao.iCMSCorrigido.times(0.0925).minus(0.01).toString();
+      apuracao.recuperar = apuracao.iCMSCorrigido.times(staticDarf()).minus(0.01).toString();
+      apuracao.recuperarComJuros = apuracao.iCMSCorrigido.plus(apuracao.juros).times(staticDarf()).minus(0.01).toString();
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
       console.log("Saving apuracao...")
@@ -193,16 +229,17 @@ function ApuracaoService() {
    }
 
    function createApuracao(cnpj, dataEmissao, lote) {
-      console.log("Nova apuracao, ", dataEmissao.year(), dataEmissao.quarter())
+//      console.log("Nova apuracao, ", dataEmissao.year(), dataEmissao.quarter())
       return apuracao = {
          cnpj: cnpj,
          ano: dataEmissao.year(),
          trimestre: dataEmissao.quarter(),
-         mes: dataEmissao.month(),
+         mes: dataEmissao.format("MMMM"),
          lote: lote,
          qtdNotas: 0,
          iCMS: BigNumber(0),
          iCMSCorrigido: BigNumber(0),
+         juros: BigNumber(0),
          recuperar: BigNumber(0),
          frete: BigNumber(0),
          valorTotal: BigNumber(0)
