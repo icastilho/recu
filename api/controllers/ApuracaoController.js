@@ -38,15 +38,7 @@ module.exports = {
 
         new ApuracaoService().apurar(req.param("lote"));
 
-
-       LoteUpload.update({nome: req.param("lote")}, {status: 'Processando'}).exec(function(err, lote){
-          if(err) {
-             console.log("Error".underline.red, err)
-          };
-
-             res.json({status:"Processando"});
-
-       });
+        res.json({status:"Processando..."});
 
     },
 

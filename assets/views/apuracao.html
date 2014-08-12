@@ -19,13 +19,14 @@
             <th>Mês</th>
             <th>Lote</th>
             <th>Qtd Notas</th>
-            <th>Total ICMS</th>
+            <th>Total Notas</th>
+            <th>ICMS</th>
             <th>ICMS + Selic</th>
             <th>Juros</th>
-            <th>Valor a Recuperar</th>
-            <th>Valor a Recuperar Juros</th>
+            <th>A Recuperar</th>
+            <th>A Recuperar +Juros</th>
             <th>Frete</th>
-            <th>Valor Total</th>
+
          </tr>
          </thead>
          <tbody>
@@ -36,13 +37,14 @@
             <td>{{apuracao.mes}}</td>
             <td>{{apuracao.lote}}</td>
             <td>{{apuracao.qtdNotas}}</td>
+            <td>{{apuracao.valorTotal | currency}}</td>
             <td>{{apuracao.iCMS | currency}}</td>
             <td>{{apuracao.iCMSCorrigido | currency}}</td>
             <td>{{apuracao.juros | currency}}</td>
             <td>{{apuracao.recuperar | currency}}</td>
             <td>{{apuracao.recuperarComJuros | currency}}</td>
             <td>{{apuracao.frete | currency}}</td>
-            <td>{{apuracao.valorTotal | currency}}</td>
+
          </tr>
          </tbody>
       </table>
