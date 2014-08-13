@@ -15,24 +15,13 @@
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
 
-var moment = require('moment'),
-   color = require('colors');
-
 module.exports = {
 
-    list: function (req, res) {
-        Apuracao
-            .find()
-            .limit(20)
-            .exec(function (err, lotes) {
-                if (err)
-                    return console.log(err);
-                else
-                    res.json(lotes);
-            });
-    },
-
-
+   /**
+    * Dispara o processo de Apuracao do lote
+    * @param req
+    * @param res
+    */
     apurar: function(req, res) {
         console.log("Start Apuracao lote:...", req.param("lote"))
 

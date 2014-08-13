@@ -24,6 +24,16 @@ module.exports.connections = {
       adapter: 'sails-disk'
    },
 
+
+   local: {
+      module: 'sails-mongo',
+      host: 'localhost',
+      port: 27017,
+      user: '',
+      password: '',
+      database: 'recu'
+   },
+
    mongo: {
       adapter: 'sails-mongo',
       host: 'kahana.mongohq.com',

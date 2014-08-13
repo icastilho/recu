@@ -7,9 +7,9 @@
 
 
       $scope.obterLotes = function (){
-         $http.get('/loteupload/view')
+         $http.get('/loteupload')
             .success(function(data) {
-               $scope.lotes = data.lotes;
+               $scope.lotes = data;
             });
       }
 

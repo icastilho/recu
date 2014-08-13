@@ -8,7 +8,7 @@
 
         $scope.apuracoes = [];
 
-        $http.get('/apuracao/list')
+        $http.get('/apuracao')
             .success(function(data) {
                 $scope.apuracoes = data;
         });

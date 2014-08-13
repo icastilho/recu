@@ -21,7 +21,7 @@ function UploadService() {
       chavesDuplicadas: [],
       duplicadas: 0,
       outros: 0,
-      status: 'Novo'
+      status: LoteUpload.LoteStatus.NOVO.key
    };
 
    this.processarArquivos = function () {
