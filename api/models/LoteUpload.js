@@ -1,3 +1,4 @@
+var Enum = require('enum');
 module.exports = {
     attributes: {
         nome: {
@@ -16,5 +17,8 @@ module.exports = {
         duplicadas: 'integer',
         outros: 'integer',
         status: 'string'
-    }
+    },
+
+   LoteStatus : new Enum(['NOVO', 'PROCESSADO', 'ERRO', 'PROCESSANDO'])
+
 };

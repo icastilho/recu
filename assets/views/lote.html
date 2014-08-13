@@ -36,13 +36,13 @@
             <td>{{lote.naoSaoNotas}}</td>
             <td nowrap>
 
-               <a class="btn btn-labeled btn-primary" ng-show="lote.status==='Novo'" ng-click="apurar(lote)"> <span class="btn-label"><i class="fa fa-play"></i></span>Processar </a>
+               <a class="btn btn-labeled btn-primary" ng-show="lote.status==='NOVO'" ng-click="apurar(lote)"> <span class="btn-label"><i class="fa fa-play"></i></span>Processar </a>
 
-               <a class="btn btn-labeled btn-success" ng-show="lote.status==='Processado'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Reprocessar </a>
+               <a class="btn btn-labeled btn-success" ng-show="lote.status==='PROCESSADO'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Reprocessar </a>
 
-               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='Erro'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
+               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='ERRO'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
 
-               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='Processando'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando </a>
+               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='PROCESSANDO'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando </a>
 
             </td>
          </tr>

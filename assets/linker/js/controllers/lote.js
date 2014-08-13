@@ -22,7 +22,7 @@
           $http.post('/apuracao/apurar', JSON.stringify({
               lote: lote.nome
           })).success(function(){
-                lote.status = 'Processando';
+                lote.status = 'PROCESSANDO';
                 $timeout($scope.obterLotes, 3000);
           });
       };

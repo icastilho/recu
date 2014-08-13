@@ -9,37 +9,28 @@ d = require('domain').create();
 
 function ApuracaoService() {
 
-   // Calma, ainda vou arrumar isso aqui
-   this.apurar = function (loteName) {
+   this.apurar = function (lote) {
       var deferred = Q.defer();
 
       d.on('error', function (err) {
-         LoteUpload.update({nome: req.param("lote")}, {status: 'Processado'}).exec(function(err, lote){
-            if(err) {
-               console.log("Error".underline.red, err)
-            }
-         });
-         return deferred.reject("[Apuracao]Não foi possível apurar o lote: " + loteName + "error: " + err.messagev);
+         console.log("ERRROOOOOOOOOOOOOOOOOO")
+         updateStatus(lote, LoteUpload.LoteStatus.ERRO);
+         return deferred.reject("[Apuracao]Não foi possível apurar o lote: ", lote, "error: ", err.messagev);
       });
 
       d.run(function () {
+         console.log("Apuracao Runing...")
 
-         LoteUpload.update({nome:loteName}, {status: 'Processando'}).exec(function(err, lote){
-            if(err) {
-               console.log("Error".underline.red, err)
-               deferred.reject(err);
-            }
-         });
+         updateStatus(lote, LoteUpload.LoteStatus.PROCESSANDO);
 
          Apuracao.find()
-            .where({lote: loteName})
+            .where({lote: lote})
             .exec(function (err, apuracoes) {
                if (err) {
                   console.log(err);
                   deferred.reject(err);
                } else {
                   if (apuracoes) {
-
                      apuracoes.forEach(function (apuracao) {
                         apuracao.destroy(function (err) {
                            console.log("apuracao removed: ")
@@ -52,7 +43,7 @@ function ApuracaoService() {
                   }
 
                   NotaFiscal.find()
-                     .where({lote: loteName})
+                     .where({lote: lote})
                      .sort('nfeProc.NFe.infNFe.ide.dEmi ASC')
                      .exec(function (err, notas) {
                         if (err) {
@@ -60,16 +51,12 @@ function ApuracaoService() {
                            deferred.reject(err);
                         } else {
                            if (notas.length > 0) {
-                              run(notas, loteName,function () {
+                              run(notas, lote,function () {
                                  deferred.resolve();
                               });
                            } else {
                               console.log("Nenhuma nota encontrada");
-                              LoteUpload.update({nome: loteName}, {status: 'Processado'}).exec(function(err, lote){
-                                 if(err) {
-                                    console.high("Erro ao salvar lote", err);
-                                 }
-                              });
+                              updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
                            }
                         }
                      });
@@ -80,6 +67,21 @@ function ApuracaoService() {
       return deferred.promise;
    }
 
+
+   /**
+    * Atualiza o status do lote
+    * @param lote
+    * @param status
+    */
+   function updateStatus(lote, status){
+      console.log("updateStatus", status.key);
+      LoteUpload.update({nome: lote}, {status: status.key}).exec(function(err, lote){
+         console.log("updated", lote);
+         if(err) {
+            console.high("Erro ao salvar lote", err);
+         }
+      });
+   }
 
    /**
     * Executa processo de apuracao
@@ -118,12 +120,8 @@ function ApuracaoService() {
 
       Q.fcall(apurarValores, apuracao, nfes)
          .then(function (){
-            LoteUpload.update({nome: lote}, {status: 'Processado'}).exec(function(err, lote){
-               if(err) {
-                  console.high("Erro ao salvar lote", err);
-               }
-               callback()
-            });
+            updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
+            callback()
          });
       console.log("Finish...")
 
@@ -157,7 +155,7 @@ function ApuracaoService() {
          results.forEach(function (nota) {
             apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(nota.iCMSCorrigido);
             var juros = nota.juros.times(nota.qtdDias);
-            console.log("juros: ", nota.juros.toString(), " dias:", nota.qtdDias, " valor: ", juros.toString());
+//            console.log("juros: ", nota.juros.toString(), " dias:", nota.qtdDias, " valor: ", juros.toString());
 
             apuracao.juros = apuracao.juros.plus(juros);
          });
@@ -224,6 +222,11 @@ function ApuracaoService() {
       return   deferred.promise;
    }
 
+   /**
+    * Salva o resultado da Apuracao
+    * @param apuracao
+    * @param callback
+    */
    function saveApuracao(apuracao, callback) {
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
@@ -251,6 +254,13 @@ function ApuracaoService() {
 
    }
 
+   /**
+    * Cria novo Objeto Apuracao
+    * @param cnpj
+    * @param dataEmissao
+    * @param lote
+    * @returns {{cnpj: *, ano: *, trimestre: *, mes: *, lote: *, qtdNotas: number, iCMS: (*|exports), iCMSCorrigido: (*|exports), juros: (*|exports), recuperar: (*|exports), frete: (*|exports), valorTotal: (*|exports)}}
+    */
    function createApuracao(cnpj, dataEmissao, lote) {
 //      console.log("Nova apuracao, ", dataEmissao.year(), dataEmissao.quarter())
       return apuracao = {
