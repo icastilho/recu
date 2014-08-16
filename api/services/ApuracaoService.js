@@ -1,72 +1,43 @@
-/**
- * Created by icastilho on 01/08/14.
- */
 Q = require('q');
 var BigNumber = require('bignumber.js');
 var moment = require('moment');
 moment.lang('pt');
-d = require('domain').create();
 
 function ApuracaoService() {
+
+   const JUROS = 0.0033,
+      DARF = 0.0925;
 
    this.apurar = function (lote) {
       var deferred = Q.defer();
 
-      d.on('error', function (err) {
-         console.info("ERRROOOOOOOOOOOOOOOOOO")
-         updateStatus(lote, LoteUpload.LoteStatus.ERRO);
-         return deferred.reject("[Apuracao]Não foi possível apurar o lote: ", lote, "error: ", err.messagev);
-      });
+      console.log("Apuracao Runing...");
 
-      d.run(function () {
-         console.log("Apuracao Runing...")
-
-         updateStatus(lote, LoteUpload.LoteStatus.PROCESSANDO);
-
-         Apuracao.find()
-            .where({lote: lote})
-            .exec(function (err, apuracoes) {
-               if (err) {
-                  console.error(err);
-                  deferred.reject(err);
-               } else {
-                  if (apuracoes) {
-                     apuracoes.forEach(function (apuracao) {
-                        apuracao.destroy(function (err) {
-                           console.error("apuracao removed: ")
-                           deferred.reject(err);
-                        });
-                     });
-
-                  } else {
-                     console.log("Nenhuma apuracao encontrada")
-                  }
-
-                  NotaFiscal.find()
-                     .where({lote: lote})
-                     .sort('nfeProc.NFe.infNFe.ide.dEmi ASC')
-                     .exec(function (err, notas) {
-                        if (err) {
-                           console.error(err);
-                           deferred.reject(err);
-                        } else {
-                           if (notas.length > 0) {
-                              run(notas, lote,function () {
-                                 deferred.resolve();
-                              });
-                           } else {
-                              console.log("Nenhuma nota encontrada");
-                              updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
-                           }
-                        }
-                     });
-               }
-            });
-      });
+      updateStatus(lote, LoteUpload.LoteStatus.PROCESSANDO)
+         .then(function() {
+            return Apuracao.removerApuracoesDo(lote.nome);
+         })
+         .then(function() {
+            return findNotasPor(lote.nome);
+         })
+         .then(function(notas) {
+            return apurar(notas, lote.nome)
+         })
+         .then(function() {
+            return updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
+         })
+         .done(function(lote) {
+            deferred.resolve(lote);
+         });
 
       return deferred.promise;
    }
 
+   function findNotasPor(nome) {
+      return NotaFiscal.find()
+         .where({lote: nome})
+         .sort('nfeProc.NFe.infNFe.ide.dEmi ASC');
+   }
 
    /**
     * Atualiza o status do lote
@@ -74,13 +45,46 @@ function ApuracaoService() {
     * @param status
     */
    function updateStatus(lote, status){
-      //console.debug("updateStatus", status.key);
-      LoteUpload.update({nome: lote}, {status: status.key}).exec(function(err, lote){
-         console.info("updated", lote);
-         if(err) {
-            console.high("Erro ao salvar lote", err);
+      lote.status = status.key;
+      return lote.save();
+   }
+
+   function extrairDataEmissao(nota) {
+      return parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
+   }
+
+   /**
+    * @param notas
+    * @param apuracao
+    * @param lote
+    * @returns {Array} uma matriz com a estrutura [CNPJ][MES][NOTA]
+    */
+   function extrairApuracoesAFazer(notas) {
+      var apuracoesAFazer = [];
+
+      notas.forEach(function (nota) {
+
+         var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
+         var dataEmissao = extrairDataEmissao(nota);
+         var mes = Number(dataEmissao.format("M"));
+
+         if (!apuracoesAFazer[cnpj])
+            apuracoesAFazer[cnpj] = [];
+
+         if (nota.tipo == "VENDA") {
+
+            if (!apuracoesAFazer[cnpj][mes])
+               apuracoesAFazer[cnpj][mes] = [];
+
+            apuracoesAFazer[cnpj][mes].push(nota);
+
+         } else {
+            console.log("Nao é nota de venda: ", nota.chave);
          }
+
       });
+
+      return apuracoesAFazer;
    }
 
    /**
@@ -88,46 +92,33 @@ function ApuracaoService() {
     * @param notas
     * @param lote
     */
-   function run(notas, lote, callback) {
-      var dataEmi = parseToDate(notas[0].nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
-      var apuracao = createApuracao(notas[0].nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0], dataEmi, lote);
-      var nfes = [];
-      notas.forEach(function (nota) {
+   function apurar(notas, lote) {
+      var deferred = Q.defer();
 
-         if(nota.tipo == "VENDA"){
-            var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
-            if (cnpj != apuracao.cnpj) {
-               console.error("CNPJ diferente encontrado no Lote", cnpj);
-               //TODO implementar tratamento para CNPJ diferentes econtrados
-            } else {
-               var dataEmissao = parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
-               var mes = dataEmissao.format("MMMM");
-               if (apuracao.mes != mes) {
-                  apurarValores(apuracao, nfes);
-                  apuracao = createApuracao(apuracao.cnpj, dataEmissao, lote);
-                  nfes = [];
-               }
+      var apuracoes = extrairApuracoesAFazer(notas);
 
-               apuracao.qtdNotas++;
-               nfes.push(nota);
+      var apuracoesQueue = [];
 
-            }
-         }else{
-            //console.info("Nao é nota de venda: ", nota.chave);
+      for(var cnpj in apuracoes) {
+
+         for (var mes in apuracoes[cnpj]) {
+            var notas = apuracoes[cnpj][mes];
+            // TODO data extraida verifica apenas o mes e não ano, portanto se subir
+            // um zip com notas de anos diferentes do mesmo mês ferro
+            var apuracao = criarApuracao(cnpj, extrairDataEmissao(notas[0]), lote);
+            apuracao.qtdNotas = notas.length;
+
+            apuracoesQueue.push(Q.fcall(apurarValores, apuracao, notas));
          }
+      }
 
-      });
-
-      Q.fcall(apurarValores, apuracao, nfes)
-         .then(function (){
-            updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
-            callback()
+      Q.all(apuracoesQueue)
+         .done(function() {
+            deferred.resolve();
          });
-      console.info("Finish...")
 
+      return deferred.promise;
    }
-
-
 
    /**
     * Soma os valores das notas
@@ -136,90 +127,59 @@ function ApuracaoService() {
     * @returns {*}
     */
    function apurarValores(apuracao, nfes) {
-      //console.debug("Apurando valores...");
+      console.log("Apurando valores...");
 
       var deferred = Q.defer();
-      var queue = [];
+      var correcoesICMSQueue = [];
 
       nfes.forEach(function (nota) {
-         var dataEmissao = parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
+         var dataEmissao = extrairDataEmissao(nota);
          var iCMS = BigNumber(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
+
          apuracao.valorTotal = apuracao.valorTotal.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
          apuracao.frete = apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
-         apuracao.iCMS = apuracao.iCMS.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
-         var n = {dataEmissao: dataEmissao,iCMS:iCMS };
-         queue.push(Q.fcall(corrigirICMS, n));
+         apuracao.iCMS = apuracao.iCMS.plus(iCMS);
+
+         correcoesICMSQueue.push(
+            Q.fcall(corrigirICMS, {dataEmissao: dataEmissao, iCMS:iCMS}));
       });
 
-      Q.all(queue).then(function (results) {
-         results.forEach(function (nota) {
-            apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(nota.iCMSCorrigido);
-            var juros = nota.juros.times(nota.qtdDias);
-//            console.log("juros: ", nota.juros.toString(), " dias:", nota.qtdDias, " valor: ", juros.toString());
+      Q.all(correcoesICMSQueue)
+         .then(function (correcoesICMS) {
+            correcoesICMS.forEach(function (correcao) {
+               apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(correcao.iCMSCorrigido);
+               apuracao.juros = apuracao.juros.plus(correcao.juros);
+            });
 
-            apuracao.juros = apuracao.juros.plus(juros);
+            saveApuracao(apuracao, function () {
+               console.log("Saved!!! month: ", apuracao.mes);
+               console.log("qtdNotas", nfes.length);
+               deferred.resolve();
+            });
          });
 
-         saveApuracao(apuracao, function () {
-            //console.debug("Saved!!! month: ", apuracao.mes);
-            //console.debug("qtdNotas", nfes.length);
-            deferred.resolve();
-         });
-      });
-      console.info("Finalizando apuracao...");
+      console.log("Finalizando apuracao...");
       return deferred.promise;
    }
 
-
-   /**
-    *   Variaveis globais de calculo
-    */
-   function staticJuros(){
-      return 0.0033;
-   }
-   function staticDarf(){
-      return  0.0925;
-   }
-
-
    /**
     * Atualiza valor de ICMS com baseado na selic
-    * @param dataEmissao
-    * @param iCMS
+    * @param nota
     * @returns {*}
     */
    function corrigirICMS(nota) {
       var deferred = Q.defer();
 
-      new SelicService().consultar(new Date(nota.dataEmissao), nota.iCMS, function (valor) {
-         nota.iCMSCorrigido = valor;
+      var days =  moment().diff(nota.dataEmissao, 'days');
 
-         var today =  moment(new Date());
-         nota.qtdDias = today.diff(nota.dataEmissao, 'days')
-         nota.juros = nota.iCMSCorrigido.times(staticJuros())
-//         console.log("iCMSCorrigido: ",  nota.iCMSCorrigido.toString(), " valor juros", nota.juros.toString())
-         deferred.resolve(nota);
-//         console.log("iCMS: ", iCMS.toString(), " valor corrigido: ", valor.toString())
+      SelicService.consultar(new Date(nota.dataEmissao), nota.iCMS, function (valor) {
+         deferred.resolve({
+            iCMSCorrigido: valor,
+            juros: valor.times(JUROS).times(days)
+         });
       });
 
-      return   deferred.promise;
-   }
-
-   /**
-    * Aplica juros sobre o iCMS
-    * Regra01
-    * @param nota
-    */
-   function aplicarJuros(nota){
-      var deferred = Q.defer();
-
-      var start = moment(nota.dataEmissao);
-      var today =  moment(new Date());
-      nota.qtdDias = start.diff(today, 'days')
-      nota.juros = nota.iCMSCorrigido.times(staticJuros())
-
-      deferred.resolve(nota);
-      return   deferred.promise;
+      return deferred.promise;
    }
 
    /**
@@ -230,29 +190,20 @@ function ApuracaoService() {
    function saveApuracao(apuracao, callback) {
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
-      apuracao.creditoBruto = apuracao.iCMS.times(staticDarf()).minus(0.01).toString();
-      apuracao.creditoAtualizado = apuracao.iCMSCorrigido.times(staticDarf()).minus(0.01).toString();
-      apuracao.creditoVirtual = apuracao.iCMSCorrigido.plus(apuracao.juros).times(staticDarf()).minus(0.01).toString();
+      apuracao.creditoBruto = apuracao.iCMS.times(DARF).minus(0.01).toString();
+      apuracao.creditoAtualizado = apuracao.iCMSCorrigido.times(DARF).minus(0.01).toString();
+      apuracao.creditoVirtual = apuracao.iCMSCorrigido.plus(apuracao.juros).times(DARF).minus(0.01).toString();
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
-      console.info("Saving apuracao...")
-      //console.debug(apuracao);
 
       Apuracao
          .create(apuracao)
          .exec(function (err, apuracao) {
-            //console.debug('create Apuracao done')
-            // Error handling
-            if (err) {
-               return console.error(err);
-               // The Apuracao was created successfully!
-            } else {
-               console.info("Apuracao created successfully:", apuracao);
-            }
+            if (err)
+               throw new (err);
+
+            callback();
          });
-
-      callback();
-
    }
 
    /**
@@ -262,9 +213,8 @@ function ApuracaoService() {
     * @param lote
     * @returns {{cnpj: *, ano: *, trimestre: *, mes: *, lote: *, qtdNotas: number, iCMS: (*|exports), iCMSCorrigido: (*|exports), juros: (*|exports), creditoAtualizado: (*|exports), frete: (*|exports), valorTotal: (*|exports)}}
     */
-   function createApuracao(cnpj, dataEmissao, lote) {
-//      console.log("Nova apuracao, ", dataEmissao.year(), dataEmissao.quarter())
-      return apuracao = {
+   function criarApuracao(cnpj, dataEmissao, lote) {
+      return {
          cnpj: cnpj,
          ano: dataEmissao.year(),
          trimestre: dataEmissao.quarter(),
@@ -278,7 +228,6 @@ function ApuracaoService() {
          frete: BigNumber(0),
          valorTotal: BigNumber(0)
       }
-
    }
 
    /**
@@ -293,4 +242,4 @@ function ApuracaoService() {
 
 }
 
-module.exports = ApuracaoService;
+module.exports = new ApuracaoService();

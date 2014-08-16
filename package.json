@@ -40,10 +40,8 @@
       "q": "^1.0.1",
       "request": "^2.37.0",
       "sails-mongo": "~0.10.0-rc5",
-      "scribe": "git+https://github.com/bluejamesbond/Scribe.js.git",
       "split": "^0.3.0",
       "string": "^1.9.0",
-      "underscore": "^1.6.0",
       "xml2js": "~0.4.4"
    },
    "scripts": {

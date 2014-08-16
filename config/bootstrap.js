@@ -11,8 +11,6 @@
 
 var UploadJob = require("../api/services/UploadJob.js");
 var CronJob = require('cron').CronJob;
-var SelicService = require('../api/services/SelicService.js');
-var service = new SelicService();
 var moment = require('moment');
 var colors = require('colors');
 
@@ -26,7 +24,7 @@ module.exports.bootstrap = function (cb) {
    new CronJob('0 0 5 * * *', function () {
       console.info("Atualizando Selic... ".green);
 
-      service.atualizarSelic();
+      SelicService.atualizarSelic();
    }, null, true, "America/Sao_Paulo");
 
 

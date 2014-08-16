@@ -4,7 +4,6 @@ var fs = require('fs-extra'),
    S = require('string'),
    path = require('path'),
    AdmZip = require('adm-zip'),
-   _ = require('underscore'),
    d = require('domain').create();
 
 
@@ -173,14 +172,14 @@ function UploadService() {
       LoteUpload.create(loteUpload).exec(function (err, lote) {
          if (err)     console.log(err);
          else {
-            _.each(notas, function (nota) {
+
+            notas.forEach(function(nota) {
                nota.lote = loteUpload.nome;
                nota.chave = nota.nfeProc.protNFe[0].infProt[0].chNFe[0];
 
                NotaFiscal.create(nota).exec(function (err, nota) {
                   if (err)     console.log(err)
                });
-
             });
 
             console.log("LoteUpload Salvo...");
