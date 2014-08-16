@@ -30,7 +30,7 @@ passport.use(
           process.nextTick(function () {
             var exists = false;
 
-             users.forEach(users, function (user) {
+             users.forEach(function (user) {
                 if (user.id == userprofile.id)
                    exists = true;
              });
