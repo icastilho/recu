@@ -19,5 +19,5 @@ module.exports.models = {
     ***************************************************************************/
 
    connection: 'mongo',
-   migrate: 'alter'
+   migrate: 'safe'
 };
