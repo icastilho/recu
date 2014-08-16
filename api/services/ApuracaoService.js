@@ -13,7 +13,7 @@ function ApuracaoService() {
       var deferred = Q.defer();
 
       d.on('error', function (err) {
-         console.log("ERRROOOOOOOOOOOOOOOOOO")
+         console.info("ERRROOOOOOOOOOOOOOOOOO")
          updateStatus(lote, LoteUpload.LoteStatus.ERRO);
          return deferred.reject("[Apuracao]Não foi possível apurar o lote: ", lote, "error: ", err.messagev);
       });
@@ -27,13 +27,13 @@ function ApuracaoService() {
             .where({lote: lote})
             .exec(function (err, apuracoes) {
                if (err) {
-                  console.log(err);
+                  console.error(err);
                   deferred.reject(err);
                } else {
                   if (apuracoes) {
                      apuracoes.forEach(function (apuracao) {
                         apuracao.destroy(function (err) {
-                           console.log("apuracao removed: ")
+                           console.error("apuracao removed: ")
                            deferred.reject(err);
                         });
                      });
@@ -47,7 +47,7 @@ function ApuracaoService() {
                      .sort('nfeProc.NFe.infNFe.ide.dEmi ASC')
                      .exec(function (err, notas) {
                         if (err) {
-                           console.log(err);
+                           console.error(err);
                            deferred.reject(err);
                         } else {
                            if (notas.length > 0) {
@@ -74,9 +74,9 @@ function ApuracaoService() {
     * @param status
     */
    function updateStatus(lote, status){
-      console.log("updateStatus", status.key);
+      //console.debug("updateStatus", status.key);
       LoteUpload.update({nome: lote}, {status: status.key}).exec(function(err, lote){
-         console.log("updated", lote);
+         console.info("updated", lote);
          if(err) {
             console.high("Erro ao salvar lote", err);
          }
@@ -113,7 +113,7 @@ function ApuracaoService() {
 
             }
          }else{
-            console.log("Nao é nota de venda: ", nota.chave);
+            //console.info("Nao é nota de venda: ", nota.chave);
          }
 
       });
@@ -123,7 +123,7 @@ function ApuracaoService() {
             updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
             callback()
          });
-      console.log("Finish...")
+      console.info("Finish...")
 
    }
 
@@ -136,7 +136,7 @@ function ApuracaoService() {
     * @returns {*}
     */
    function apurarValores(apuracao, nfes) {
-      console.log("Apurando valores...");
+      //console.debug("Apurando valores...");
 
       var deferred = Q.defer();
       var queue = [];
@@ -161,12 +161,12 @@ function ApuracaoService() {
          });
 
          saveApuracao(apuracao, function () {
-            console.log("Saved!!! month: ", apuracao.mes);
-            console.log("qtdNotas", nfes.length);
+            //console.debug("Saved!!! month: ", apuracao.mes);
+            //console.debug("qtdNotas", nfes.length);
             deferred.resolve();
          });
       });
-      console.log("Finalizando apuracao...");
+      console.info("Finalizando apuracao...");
       return deferred.promise;
    }
 
@@ -230,23 +230,24 @@ function ApuracaoService() {
    function saveApuracao(apuracao, callback) {
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
-      apuracao.recuperar = apuracao.iCMSCorrigido.times(staticDarf()).minus(0.01).toString();
-      apuracao.recuperarComJuros = apuracao.iCMSCorrigido.plus(apuracao.juros).times(staticDarf()).minus(0.01).toString();
+      apuracao.creditoBruto = apuracao.iCMS.times(staticDarf()).minus(0.01).toString();
+      apuracao.creditoAtualizado = apuracao.iCMSCorrigido.times(staticDarf()).minus(0.01).toString();
+      apuracao.creditoVirtual = apuracao.iCMSCorrigido.plus(apuracao.juros).times(staticDarf()).minus(0.01).toString();
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
-      console.log("Saving apuracao...")
-      console.log(apuracao);
+      console.info("Saving apuracao...")
+      //console.debug(apuracao);
 
       Apuracao
          .create(apuracao)
          .exec(function (err, apuracao) {
-            console.log('create Apuracao done')
+            //console.debug('create Apuracao done')
             // Error handling
             if (err) {
-               return console.log(err);
+               return console.error(err);
                // The Apuracao was created successfully!
             } else {
-               console.log("Apuracao created successfully:", apuracao);
+               console.info("Apuracao created successfully:", apuracao);
             }
          });
 
@@ -259,7 +260,7 @@ function ApuracaoService() {
     * @param cnpj
     * @param dataEmissao
     * @param lote
-    * @returns {{cnpj: *, ano: *, trimestre: *, mes: *, lote: *, qtdNotas: number, iCMS: (*|exports), iCMSCorrigido: (*|exports), juros: (*|exports), recuperar: (*|exports), frete: (*|exports), valorTotal: (*|exports)}}
+    * @returns {{cnpj: *, ano: *, trimestre: *, mes: *, lote: *, qtdNotas: number, iCMS: (*|exports), iCMSCorrigido: (*|exports), juros: (*|exports), creditoAtualizado: (*|exports), frete: (*|exports), valorTotal: (*|exports)}}
     */
    function createApuracao(cnpj, dataEmissao, lote) {
 //      console.log("Nova apuracao, ", dataEmissao.year(), dataEmissao.quarter())

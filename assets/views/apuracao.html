@@ -23,13 +23,14 @@
             <th>ICMS</th>
             <th>ICMS + Selic</th>
             <th>Juros</th>
-            <th>A Recuperar</th>
-            <th>A Recuperar +Juros</th>
+            <th>Crédito Bruto</th>
+            <th>Crédito Atualizado</th>
+            <th>Crédito Virtual</th>
             <th>Frete</th>
 
          </tr>
          </thead>
-         <tbody>
+         <tbody>creditoAtualizado
          <tr ng-repeat="apuracao in apuracoes">
             <td>{{apuracao.cnpj}}</td>
             <td>{{apuracao.ano}}</td>
@@ -41,8 +42,9 @@
             <td>{{apuracao.iCMS | currency}}</td>
             <td>{{apuracao.iCMSCorrigido | currency}}</td>
             <td>{{apuracao.juros | currency}}</td>
-            <td>{{apuracao.recuperar | currency}}</td>
-            <td>{{apuracao.recuperarComJuros | currency}}</td>
+            <td>{{apuracao.creditoBruto | currency}}</td>
+            <td>{{apuracao.creditoAtualizado | currency}}</td>
+            <td>{{apuracao.creditoVirtual | currency}}</td>
             <td>{{apuracao.frete | currency}}</td>
 
          </tr>

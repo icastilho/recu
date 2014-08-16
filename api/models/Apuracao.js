@@ -17,8 +17,9 @@ module.exports = {
     iCMS: "string",
     iCMSCorrigido: "string",
     juros: "string",
-    recuperar: "string",
-    recuperarComJuros: "string",
+    creditoBruto: "string",
+    creditoAtualizado: "string",
+    creditoVirtual: "string",
     frete: "string",
     valorTotal: "string",
     qtdNotas: "integer"
