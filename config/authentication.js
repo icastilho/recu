@@ -1,5 +1,4 @@
 var passport = require('passport'),
-    _ = require('underscore'),
     UserAppStrategy = require('passport-userapp').Strategy,
     S = require('string'),
     users = []    ;
@@ -10,8 +9,10 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.deserializeUser(function (username, done) {
-  var user = _.find(users, function (user) {
-    return user.username == username;
+  var user = null;
+  users.forEach(function (userIn) {
+    if (userIn.username == username)
+       user = userIn;
   });
 
   if (user === undefined) {
@@ -27,7 +28,7 @@ passport.use(
         { appId: '53cee64a3d39e' },
         function (userprofile, done) {
           process.nextTick(function () {
-            var exists = _.any(users, function (user) {
+            var exists = users.some(users, function (user) {
               return user.id == userprofile.id;
             });
 

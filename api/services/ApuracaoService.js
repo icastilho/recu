@@ -1,7 +1,7 @@
 Q = require('q');
 var BigNumber = require('bignumber.js');
 var moment = require('moment');
-moment.lang('pt');
+moment.locale('pt');
 
 function ApuracaoService() {
 
