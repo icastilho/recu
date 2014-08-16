@@ -28,9 +28,12 @@ passport.use(
         { appId: '53cee64a3d39e' },
         function (userprofile, done) {
           process.nextTick(function () {
-            var exists = users.some(users, function (user) {
-              return user.id == userprofile.id;
-            });
+            var exists = false;
+
+             users.forEach(users, function (user) {
+                if (user.id == userprofile.id)
+                   exists = true;
+             });
 
             if (!exists) {
               users.push(userprofile);
