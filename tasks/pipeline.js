@@ -40,7 +40,7 @@ var jsFilesToInject = [
    // Load sails.io before everything else
    'js/dependencies/sails.io.js',
 
-   'js/dependencies/jquery-2.0.2.min.js',
+   'js/dependencies/jquery-2.1.1.js',
    'js/dependencies/jquery-ui-1.10.3.min.js',
    'js/dependencies/app.config.js',
 
@@ -99,7 +99,7 @@ var jsFilesToInject = [
    'js/plugin/fastclick/fastclick.min.js',
 
    <!-- AngularJS -->
-   'js/angular-file-upload/angular-file-upload.min.js',
+   'js/angular-file-upload/angular-file-upload.js',
    'js/dependencies/angular/ui-bootstrap-custom-tpls-0.11.0.js',
 
    <!-- Upload -->
