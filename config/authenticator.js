@@ -9,7 +9,7 @@ function Authenticator(req, res, next) {
           return next(err);
 
         if (!user)
-          return res.forbidden("Não possui Permissão de Acesso");
+          return res.forbidden('Você não tem permissão para executar essa ação!');
 
         req.logIn(user, function(err) {
           if (err)

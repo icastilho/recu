@@ -18,6 +18,6 @@ module.exports.models = {
     *                                                                          *
     ***************************************************************************/
 
-   connection: 'mongo',
-   migrate: 'alter'
+   connection: 'localDiskDb',
+   migrate: 'drop'
 };
