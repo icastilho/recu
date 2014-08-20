@@ -5,13 +5,12 @@ moment.lang('pt');
 
 function ApuracaoService() {
 
-   const JUROS = 0.0033,
-      DARF = 0.0925;
+   const JUROS = 0.0033;
 
-   this.apurar = function (lote) {
+   this.apurar = function (lote, regime) {
       var deferred = Q.defer();
 
-      console.log("Apuracao Runing...");
+      console.log("Apuracao Runing...".green);
 
       updateStatus(lote, LoteUpload.LoteStatus.PROCESSANDO)
          .then(function() {
@@ -21,12 +20,13 @@ function ApuracaoService() {
             return findNotasPor(lote.nome);
          })
          .then(function(notas) {
-            return apurar(notas, lote.nome)
+            return apurar(notas, lote.nome, regime)
          })
          .then(function() {
             return updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
          })
          .done(function(lote) {
+            console.log("done".green);
             deferred.resolve(lote);
          });
 
@@ -79,7 +79,7 @@ function ApuracaoService() {
             apuracoesAFazer[cnpj][mes].push(nota);
 
          } else {
-            console.log("Nao é nota de venda: ", nota.chave);
+            console.log("Nao é nota de venda: ".yellow, nota.chave);
          }
 
       });
@@ -92,7 +92,7 @@ function ApuracaoService() {
     * @param notas
     * @param lote
     */
-   function apurar(notas, lote) {
+   function apurar(notas, lote, regime) {
       var deferred = Q.defer();
 
       var apuracoes = extrairApuracoesAFazer(notas);
@@ -105,7 +105,7 @@ function ApuracaoService() {
             var notas = apuracoes[cnpj][mes];
             // TODO data extraida verifica apenas o mes e não ano, portanto se subir
             // um zip com notas de anos diferentes do mesmo mês ferro
-            var apuracao = criarApuracao(cnpj, extrairDataEmissao(notas[0]), lote);
+            var apuracao = criarApuracao(cnpj, extrairDataEmissao(notas[0]), lote, regime);
             apuracao.qtdNotas = notas.length;
 
             apuracoesQueue.push(Q.fcall(apurarValores, apuracao, notas));
@@ -127,7 +127,7 @@ function ApuracaoService() {
     * @returns {*}
     */
    function apurarValores(apuracao, nfes) {
-      console.log("Apurando valores...");
+      console.log("Apurando valores...".green);
 
       var deferred = Q.defer();
       var correcoesICMSQueue = [];
@@ -152,13 +152,13 @@ function ApuracaoService() {
             });
 
             saveApuracao(apuracao, function () {
-               console.log("Saved!!! month: ", apuracao.mes);
-               console.log("qtdNotas", nfes.length);
+               console.log("Saved!!! month: ".green, apuracao.mes);
+               console.log("qtdNotas".green, nfes.length);
                deferred.resolve();
             });
          });
 
-      console.log("Finalizando apuracao...");
+      console.log("Finalizando apuracao...".green);
       return deferred.promise;
    }
 
@@ -188,22 +188,58 @@ function ApuracaoService() {
     * @param callback
     */
    function saveApuracao(apuracao, callback) {
+      console.log('saveApuracao'.green);
+
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
-      apuracao.creditoBruto = apuracao.iCMS.times(DARF).minus(0.01).toString();
-      apuracao.creditoAtualizado = apuracao.iCMSCorrigido.times(DARF).minus(0.01).toString();
-      apuracao.creditoVirtual = apuracao.iCMSCorrigido.plus(apuracao.juros).times(DARF).minus(0.01).toString();
+
+      console.info(apuracao.regime);
+      console.info(apuracao.regime.value.pis);
+      console.info(apuracao.regime.value.cofins);
+
+      console.info("BRUTO".yellow);
+      apuracao.creditoBruto = calculaCredito(apuracao.iCMS, apuracao.regime);
+      console.log(apuracao.creditoBruto);
+
+      console.info("ATUALIZADO".yellow);
+      apuracao.creditoAtualizado = calculaCredito(apuracao.iCMSCorrigido, apuracao.regime);
+      console.info(apuracao.creditoAtualizado);
+
+      console.info("VIRTUAL".yellow);
+      apuracao.creditoVirtual = calculaCredito(apuracao.iCMSCorrigido.plus(apuracao.juros), apuracao.regime);
+      console.info(apuracao.creditoVirtual);
+
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
 
       Apuracao
          .create(apuracao)
          .exec(function (err, apuracao) {
-            if (err)
+            if (err) {
+               console.error(error);
                throw new (err);
+            }
 
             callback();
          });
+   }
+
+   /**
+    * Calcula o valor a ser recuperado aplicando as alicotas de PIS/Confins de acordo com o tipo de Regime informado
+    * @param valor
+    * @param regime
+    * @returns {{pis: *, cofins: *, total: *}}
+    */
+   function calculaCredito(valor, regime){
+
+      var pis = regime.value.pis,
+            cofins = regime.value.cofins,
+               DARF = pis+cofins;
+      return {
+         pis: valor.times(pis).toString(),
+         cofins: valor.times(cofins).toString(),
+         total: valor.times(DARF).toString()
+      };
    }
 
    /**
@@ -213,7 +249,7 @@ function ApuracaoService() {
     * @param lote
     * @returns {{cnpj: *, ano: *, trimestre: *, mes: *, lote: *, qtdNotas: number, iCMS: (*|exports), iCMSCorrigido: (*|exports), juros: (*|exports), creditoAtualizado: (*|exports), frete: (*|exports), valorTotal: (*|exports)}}
     */
-   function criarApuracao(cnpj, dataEmissao, lote) {
+   function criarApuracao(cnpj, dataEmissao, lote, regime) {
       return {
          cnpj: cnpj,
          ano: dataEmissao.year(),
@@ -226,7 +262,8 @@ function ApuracaoService() {
          juros: BigNumber(0),
          recuperar: BigNumber(0),
          frete: BigNumber(0),
-         valorTotal: BigNumber(0)
+         valorTotal: BigNumber(0),
+         regime: regime
       }
    }
 

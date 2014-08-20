@@ -20,7 +20,7 @@
             <th>Qtd Total</th>
             <th>Qtd Duplicadas</th>
             <th>Qtd Outros</th>
-            <th>Ação</th>
+            <th>Apurar</th>
          </tr>
          </thead>
          <tbody>
@@ -36,13 +36,19 @@
             <td>{{lote.naoSaoNotas}}</td>
             <td nowrap>
 
-               <a class="btn btn-labeled btn-primary" ng-show="lote.status==='NOVO'" ng-click="apurar(lote)"> <span class="btn-label"><i class="fa fa-play"></i></span>Processar </a>
+               <a class="btn btn-labeled btn-primary" ng-show="lote.status==='NOVO'" ng-click="apurar(lote, 'CUMULATIVO')"> <span class="btn-label"><i class="fa fa-play"></i></span>Cumulativo </a>
+               <a class="btn btn-labeled btn-primary" ng-show="lote.status==='NOVO'" ng-click="apurar(lote, 'NAO_CUMULATIVO')"> <span class="btn-label"><i class="fa fa-play"></i></span>Não Cumulativo </a>
 
-               <a class="btn btn-labeled btn-success" ng-show="lote.status==='PROCESSADO'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Reprocessar </a>
+               <a class="btn btn-labeled btn-success" ng-show="lote.status==='PROCESSADO'" ng-click="apurar(lote, 'CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Cumulativo </a>
+               <a class="btn btn-labeled btn-success" ng-show="lote.status==='PROCESSADO'" ng-click="apurar(lote, 'NAO_CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-ok"></i></span>Não Cumulativo </a>
 
-               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='ERRO'" ng-click="apurar(lote)"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
+               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='ERRO'" ng-click="apurar(lote, 'CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Cumulativo </a>
+               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='ERRO'" ng-click="apurar(lote, 'NAO_CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Não Cumulativo </a>
 
-               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='PROCESSANDO'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando </a>
+               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='PROCESSANDO' && regime==='CUMULATIVO'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando Regime Cumulativo</a>
+               <a  class="btn btn-labeled btn-info" ng-show="lote.status==='PROCESSANDO' && regime==='NAO_CUMULATIVO'"> <span class="btn-label"><i class="fa fa-refresh fa-spin"></i></span>Processando Regime Não Cumulativo</a>
+
+               <a class="btn btn-labeled btn-danger" ng-show="lote.status==='PROCESSANDO'" ng-click="apurar(lote, 'CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
 
             </td>
          </tr>

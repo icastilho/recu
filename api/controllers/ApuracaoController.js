@@ -12,8 +12,9 @@ module.exports = {
          .then(
             function(lote) {
                console.info("Start Apuracao lote:...", lote.nome);
+               var regime = Apuracao.Regime.get(req.param("regime"));
                ApuracaoService
-                  .apurar(lote)
+                  .apurar(lote, regime)
                   .then(function (lote) {
                      res.json(lote);
                   });

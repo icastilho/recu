@@ -4,6 +4,7 @@
    function LoteController($scope, $http, $timeout) {
 
       $scope.lotes = [];
+      $scope.regime = '';
 
 
       $scope.obterLotes = function () {
@@ -15,11 +16,13 @@
 
       $scope.obterLotes();
 
-      $scope.apurar = function (lote) {
+      $scope.apurar = function (lote, regime) {
          lote.status = 'PROCESSANDO';
+         $scope.regime = regime;
 
          $http.post('/apuracao/apurar', JSON.stringify({
-            id: lote.id
+            id: lote.id,
+            regime: regime
          })).success(function (data) {
             lote.status = data.status;
          });

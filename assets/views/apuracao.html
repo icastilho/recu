@@ -18,6 +18,7 @@
             <th>Trimestre</th>
             <th>Mês</th>
             <th>Lote</th>
+            <th>Data Apuração</th>
             <th>Qtd Notas</th>
             <th>Total Notas</th>
             <th>ICMS</th>
@@ -37,14 +38,15 @@
             <td>{{apuracao.trimestre}}</td>
             <td>{{apuracao.mes}}</td>
             <td>{{apuracao.lote}}</td>
+            <td>{{apuracao.updatedAt | date}}</td>
             <td>{{apuracao.qtdNotas}}</td>
             <td>{{apuracao.valorTotal | currency}}</td>
             <td>{{apuracao.iCMS | currency}}</td>
             <td>{{apuracao.iCMSCorrigido | currency}}</td>
             <td>{{apuracao.juros | currency}}</td>
-            <td>{{apuracao.creditoBruto | currency}}</td>
-            <td>{{apuracao.creditoAtualizado | currency}}</td>
-            <td>{{apuracao.creditoVirtual | currency}}</td>
+            <td>{{apuracao.creditoBruto.total | currency}}</td>
+            <td>{{apuracao.creditoAtualizado.total | currency}}</td>
+            <td>{{apuracao.creditoVirtual.total | currency}}</td>
             <td>{{apuracao.frete | currency}}</td>
 
          </tr>
