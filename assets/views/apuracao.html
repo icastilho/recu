@@ -24,7 +24,8 @@
             <th>ICMS</th>
             <th>ICMS + Selic</th>
             <th>Juros</th>
-            <th>Crédito Bruto</th>
+            <th>Bruto Pis</th>
+            <th>Bruto Cofins</th>
             <th>Crédito Atualizado</th>
             <th>Crédito Virtual</th>
             <th>Frete</th>
@@ -44,7 +45,8 @@
             <td>{{apuracao.iCMS | currency}}</td>
             <td>{{apuracao.iCMSCorrigido | currency}}</td>
             <td>{{apuracao.juros | currency}}</td>
-            <td>{{apuracao.creditoBruto.total | currency}}</td>
+            <td>{{apuracao.creditoBruto.pis | currency}}</td>
+            <td>{{apuracao.creditoBruto.cofins | currency}}</td>
             <td>{{apuracao.creditoAtualizado.total | currency}}</td>
             <td>{{apuracao.creditoVirtual.total | currency}}</td>
             <td>{{apuracao.frete | currency}}</td>
