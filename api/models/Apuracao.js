@@ -36,5 +36,5 @@ module.exports = {
       return Apuracao.destroy({lote: lote});
    },
 
-   Regime: new Enum({'CUMULATIVO':{pis:0.0065, cofins:0.03},'NAO_CUMULATIVO':{pis:0.0165, cofins:0.076}, 'DIFERENCIADO':{}})
+   Regime: new Enum({'CUMULATIVO':{pis:0.005, cofins:0.03},'NAO_CUMULATIVO':{pis:0.0165, cofins:0.076}, 'DIFERENCIADO':{}})
 };

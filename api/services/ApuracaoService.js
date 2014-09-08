@@ -66,17 +66,18 @@ function ApuracaoService() {
 
          var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
          var dataEmissao = extrairDataEmissao(nota);
-         var mes = Number(dataEmissao.format("M"));
+         var anomes = dataEmissao.year().toString()+dataEmissao.month().toString();
+
 
          if (!apuracoesAFazer[cnpj])
             apuracoesAFazer[cnpj] = [];
 
          if (nota.tipo == "VENDA") {
 
-            if (!apuracoesAFazer[cnpj][mes])
-               apuracoesAFazer[cnpj][mes] = [];
+            if (!apuracoesAFazer[cnpj][anomes])
+               apuracoesAFazer[cnpj][anomes] = [];
 
-            apuracoesAFazer[cnpj][mes].push(nota);
+            apuracoesAFazer[cnpj][anomes].push(nota);
 
          } else {
             console.log("Nao é nota de venda: ".yellow, nota.chave);
@@ -101,10 +102,8 @@ function ApuracaoService() {
 
       for(var cnpj in apuracoes) {
 
-         for (var mes in apuracoes[cnpj]) {
-            var notas = apuracoes[cnpj][mes];
-            // TODO data extraida verifica apenas o mes e não ano, portanto se subir
-            // um zip com notas de anos diferentes do mesmo mês ferro
+         for (var anomes in apuracoes[cnpj]) {
+            var notas = apuracoes[cnpj][anomes];
             var apuracao = criarApuracao(cnpj, extrairDataEmissao(notas[0]), lote, regime);
             apuracao.qtdNotas = notas.length;
 
@@ -198,7 +197,7 @@ function ApuracaoService() {
       console.info(apuracao.regime.value.cofins);
 
       console.info("BRUTO".yellow);
-      apuracao.creditoBruto = calculaCredito(apuracao.iCMS, apuracao.regime);
+      apuracao.creditoBruto = calculaCredito(apuracao.iCMS, apuracao.regime)
       console.log(apuracao.creditoBruto);
 
       console.info("ATUALIZADO".yellow);
@@ -231,15 +230,22 @@ function ApuracaoService() {
     * @returns {{pis: *, cofins: *, total: *}}
     */
    function calculaCredito(valor, regime){
-
       var pis = regime.value.pis,
             cofins = regime.value.cofins,
-               DARF = pis+cofins;
-      return {
+               DARF = BigNumber(pis).plus(BigNumber(cofins));
+
+      console.log("darf:", DARF)
+      console.log('pis'+valor.times(pis).toString());
+      console.log('cofins'+valor.times(cofins).toString());
+      console.log('DARF'+valor.times(DARF).toString());
+
+      var retorno = {
          pis: valor.times(pis).toString(),
          cofins: valor.times(cofins).toString(),
          total: valor.times(DARF).toString()
       };
+      console.log(retorno);
+      return retorno;
    }
 
    /**
