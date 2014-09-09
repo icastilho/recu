@@ -4,7 +4,8 @@ var fs = require('fs-extra'),
    S = require('string'),
    path = require('path'),
    AdmZip = require('adm-zip'),
-   d = require('domain').create();
+   d = require('domain').create(),
+   walk = require('fs-walk');
 
 
 function UploadService() {
@@ -57,12 +58,17 @@ function UploadService() {
 
       d.run(function () {
          zip.extractAllTo(dir, true);
-         var files = fs.readdirSync(dir);
 
-         files.forEach(function (file) {
-            if (invalidarArquivo(file)) return;
-            queue.push(Q.fcall(parsearArquivo, dir + file));
-         });
+        walk.walkSync(dir, function(basedir, filename, stat, next) {
+
+          if(!stat.isDirectory()) {
+            if (invalidarArquivo(basedir+filename)) return;
+              queue.push(Q.fcall(parsearArquivo, basedir+'/'+filename));
+
+            };
+        }, function(err) {
+          if (err) console.log(err);
+        });
 
          Q.all(queue).then(function () {
             salvar(function () {
@@ -82,7 +88,9 @@ function UploadService() {
 
       console.log("[Upload]parseando arquivo: " + path);
 
-      fs.readFile(path, function (error, data) {
+      fs.readFile(path, function (err, data) {
+        if (err)     console.log(err);
+
          parser.parseString(data, function (err, nota) {
             if (err) {
                deferred.reject(err);

@@ -14,7 +14,10 @@
  *
  * @docs        :: http://sailsjs.org/#!documentation/controllers
  */
-var UploadJob = require("../services/UploadJob.js");
+var UploadJob = require("../services/UploadJob.js"),
+    S = require('string'),
+    moment = require('moment');
+    moment.lang('pt');
 
 module.exports = {
 
@@ -24,7 +27,13 @@ module.exports = {
      */
     upload: function (req, res) {
         console.log("Upload NotaFiscal")
-        req.file('file').upload(function (err, files) {
+        req.file('file').upload({
+            saveAs: function (__newFileStream,cb) {
+              var filename = __newFileStream.filename.replace('.', '-') + '-' + moment().millisecond();
+              cb(null, filename);
+            }
+          },
+          function (err, files) {
             if (err)
                 return res.serverError(err);
 
