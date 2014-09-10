@@ -1,7 +1,7 @@
 (function () {
    'use strict';
 
-   function LoteController($scope, $http, $timeout) {
+   function LoteController($scope, $http) {
 
       $scope.lotes = [];
       $scope.regime = '';
@@ -28,9 +28,16 @@
          });
       };
 
+      $scope.remover = function(lote) {
+         $http.delete('/loteupload/'+lote.id)
+            .success(function (data) {
+               $scope.lotes.splice($scope.lotes.indexOf(lote), 1);
+            });
+      }
+
    }
 
    angular.module('apura.controllers.lote', [])
-      .controller('LoteCtrl', ['$scope', '$http', '$timeout', LoteController]);
+      .controller('LoteCtrl', ['$scope', '$http', LoteController]);
 
 })();

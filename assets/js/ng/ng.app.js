@@ -8,7 +8,6 @@
          'ui.bootstrap',
          'ui.router',
          'app.controllers',
-         'app.demoControllers',
          'app.main',
          'app.navigation',
          'app.localize',

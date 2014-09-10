@@ -8,7 +8,7 @@
 
 
 <div class="row">
-   <div class="col-xs-12" ng-show="apuracoes">
+   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-show="apuracoes.length">
 
       <table class="table table-bordered table-striped table-hover">
          <thead>
@@ -33,7 +33,6 @@
          </tr>
          </thead>
          <tbody>
-
          <tr ng-repeat="apuracao in apuracoes">
             <td><a ng-href="#/home/detalhe/{{apuracao.id}}">{{apuracao.cnpj}} </a></td>
             <td>{{apuracao.ano}}</td>
@@ -51,13 +50,16 @@
             <!--<td>{{apuracao.creditoAtualizado.total | currency}}</td>-->
             <!--<td>{{apuracao.creditoVirtual.total | currency}}</td>-->
             <td>{{apuracao.frete | currency}}</td>
+            <td>
+               <a class="btn btn-danger" ua-has-permission="admin" ng-click="remover(apuracao)" title="Remover"><i class="glyphicon glyphicon-remove"></i></a>
+            </td>
 
          </tr>
          </tbody>
       </table>
    </div>
 
-   <div class="col-xs-12" ng-hide="apuracoes">
+   <div class="col-xs-12" ng-hide="apuracoes.length">
       <h1><i class="fa fa-cog fa-spin"></i> Carregando...</h1>
    </div>
 

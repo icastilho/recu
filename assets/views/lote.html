@@ -1,13 +1,14 @@
 <div class="row">
    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
       <h1 class="page-title txt-color-blueDark">
-         <i class="fa fa-lg fa-fw fa-list-ul"></i> Ultimos Lotes Importados
+         <i class="fa fa-lg fa-fw fa-list-ul"></i> Últimos Lotes Importados
       </h1>
    </div>
 </div>
 
 <div class="row">
-   <div class="col-xs-12" ng-show="lotes">
+   <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-show="lotes.length">
+
       <table class="table table-bordered table-striped table-hover">
          <thead>
          <tr>
@@ -20,7 +21,7 @@
             <th>Qtd Total</th>
             <th>Qtd Duplicadas</th>
             <th>Qtd Outros</th>
-            <th>Apurar</th>
+            <th></th>
          </tr>
          </thead>
          <tbody>
@@ -50,13 +51,15 @@
 
                <a class="btn btn-labeled btn-danger" ng-show="lote.status==='PROCESSANDO'" ng-click="apurar(lote, 'CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
 
+               <a class="btn btn-danger" ua-has-permission="admin" ng-click="remover(lote)" title="Remover"><i class="glyphicon glyphicon-remove"></i></a>
+
             </td>
          </tr>
          </tbody>
       </table>
    </div>
 
-   <div class="col-xs-12" ng-hide="lotes">
+   <div class="col-xs-12" ng-hide="lotes.length">
       <h1><i class="fa fa-cog fa-spin"></i> Carregando...</h1>
    </div>
 

@@ -13,6 +13,13 @@
                 $scope.apuracoes = data;
         });
 
+       $scope.remover = function(apuracao) {
+          $http.delete('/apuracao/'+apuracao.id)
+             .success(function (data) {
+                $scope.apuracoes.splice($scope.apuracoes.indexOf(apuracao), 1);
+             });
+       }
+
     }
 
    function DetailController($scope, $http, $stateParams) {
