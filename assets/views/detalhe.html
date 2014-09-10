@@ -1,0 +1,34 @@
+<div class="row">
+   <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+      <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-check"></i>Detalhe da Apuração<span></span>
+      </h1>
+   </div>
+
+</div>
+
+
+<div class="row">
+   <div class="col-xs-4" ng-show="apuracao">
+
+      <ul class="list-group">
+         <li class="list-group-item">CNPJ:  <span class="badge">{{apuracao.cnpj}}</span></li>
+         <li class="list-group-item">Qualificação do Contribuinte:<span class="badge">Outra qualificação</span></li>
+         <li class="list-group-item">Tipo de Documento:<span class="badge">Declaração de compensação</span></li>
+         <li class="list-group-item">Tipo do Crédito:<span class="badge">Pagamento indevido ou a maior</span></li>
+         <li class="list-group-item">Modelo de arrecadação:<span class="badge">DARF simples</span></li>
+         <li class="list-group-item">Data de arrecadação:<span class="badge">{{apuracao.updatedAt | date}}</span></li>
+         <li class="list-group-item">Período de apuração:<span class="badge">{{apuracao.mes}}</span></li>
+         <!--<li class="list-group-item">Código da Receita:<span class="badge">{{apuracao.}}</li>-->
+         <li class="list-group-item">Nome empresarial:<span class="badge">{{apuracao.nome}}</span></li>
+         <li class="list-group-item">Valor Original do Crédito PIS:<span class="badge">{{apuracao.creditoBruto.pis | currency}}</span></li>
+         <li class="list-group-item">Valor Original do Crédito COFINS:<span class="badge">{{apuracao.creditoBruto.cofins | currency}}</span></li>
+         <!--<li class="list-group-item">Crédito Original na Data da Transmissão:<span class="badge">{{apuracao.}}</span></li>-->
+      </ul>
+
+   </div>
+
+   <div class="col-xs-12" ng-hide="apuracao">
+      <h1><i class="fa fa-cog fa-spin"></i> Carregando...</h1>
+   </div>
+
+</div>

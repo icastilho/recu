@@ -32,9 +32,10 @@
 
          </tr>
          </thead>
-         <tbody>creditoAtualizado
+         <tbody>
+
          <tr ng-repeat="apuracao in apuracoes">
-            <td>{{apuracao.cnpj}}</td>
+            <td><a ng-href="#/home/detalhe/{{apuracao.id}}">{{apuracao.cnpj}} </a></td>
             <td>{{apuracao.ano}}</td>
             <td>{{apuracao.trimestre}}</td>
             <td>{{apuracao.mes}}</td>

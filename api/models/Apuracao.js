@@ -3,6 +3,7 @@ module.exports = {
 
    attributes: {
       cnpj: "string",
+      nome: "string",
       ano: "integer",
       trimestre: "integer",
       mes: "string",
@@ -10,21 +11,7 @@ module.exports = {
       iCMS: "string",
       iCMSCorrigido: "string",
       juros: "string",
-   /*   creditoBruto: {
-         pis: "string",
-         cofins: "string",
-         total: "string"
-      },
-      creditoAtualizado: {
-         pis: "string",
-         cofins: "string",
-         total: "string"
-      },
-      creditoVirtual: {
-         pis: "string",
-         cofins: "string",
-         total: "string"
-      },*/
+
       frete: "string",
       valorTotal: "string",
       qtdNotas: "integer",

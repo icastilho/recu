@@ -71,6 +71,14 @@
                   hasPermission: 'admin'
                }
             })
+            .state('home.detalhe', {
+               url: '/detalhe/:id',
+               templateUrl: 'views/detalhe.html',
+               controller: 'ApuracaoDetailCtrl',
+               data: {
+                  hasPermission: 'admin'
+               }
+            })
             .state('auth', {
                url: "/auth",
                abstract: true,

@@ -66,7 +66,7 @@ function ApuracaoService() {
 
          var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
          var dataEmissao = extrairDataEmissao(nota);
-         var anomes = dataEmissao.year().toString()+dataEmissao.month().toString();
+         var anomes =  Number(dataEmissao.year().toString()+dataEmissao.month().toString());
 
 
          if (!apuracoesAFazer[cnpj])
@@ -96,6 +96,7 @@ function ApuracaoService() {
    function apurar(notas, lote, regime) {
       var deferred = Q.defer();
 
+      var pjNome = notas[0].nfeProc.NFe[0].infNFe[0].emit[0].xNome;
       var apuracoes = extrairApuracoesAFazer(notas);
 
       var apuracoesQueue = [];
@@ -104,7 +105,7 @@ function ApuracaoService() {
 
          for (var anomes in apuracoes[cnpj]) {
             var notas = apuracoes[cnpj][anomes];
-            var apuracao = criarApuracao(cnpj, extrairDataEmissao(notas[0]), lote, regime);
+            var apuracao = criarApuracao(cnpj,pjNome, extrairDataEmissao(notas[0]), lote, regime);
             apuracao.qtdNotas = notas.length;
 
             apuracoesQueue.push(Q.fcall(apurarValores, apuracao, notas));
@@ -234,7 +235,7 @@ function ApuracaoService() {
             cofins = regime.value.cofins,
                DARF = BigNumber(pis).plus(BigNumber(cofins));
 
-      console.log("darf:", DARF)
+      console.log("darf:", DARF);
       console.log('pis'+valor.times(pis).toString());
       console.log('cofins'+valor.times(cofins).toString());
       console.log('DARF'+valor.times(DARF).toString());
@@ -255,9 +256,10 @@ function ApuracaoService() {
     * @param lote
     * @returns {{cnpj: *, ano: *, trimestre: *, mes: *, lote: *, qtdNotas: number, iCMS: (*|exports), iCMSCorrigido: (*|exports), juros: (*|exports), creditoAtualizado: (*|exports), frete: (*|exports), valorTotal: (*|exports)}}
     */
-   function criarApuracao(cnpj, dataEmissao, lote, regime) {
+   function criarApuracao(cnpj, nome, dataEmissao, lote, regime) {
       return {
          cnpj: cnpj,
+         nome: nome,
          ano: dataEmissao.year(),
          trimestre: dataEmissao.quarter(),
          mes: dataEmissao.format("MMMM"),
