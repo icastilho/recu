@@ -95,16 +95,14 @@ function ApuracaoService() {
     */
    function apurar(notas, lote, regime) {
       var deferred = Q.defer();
-
-      var pjNome = notas[0].nfeProc.NFe[0].infNFe[0].emit[0].xNome;
       var apuracoes = extrairApuracoesAFazer(notas);
-
       var apuracoesQueue = [];
 
       for(var cnpj in apuracoes) {
 
          for (var anomes in apuracoes[cnpj]) {
             var notas = apuracoes[cnpj][anomes];
+            var pjNome = notas[0].nfeProc.NFe[0].infNFe[0].emit[0].xNome;
             var apuracao = criarApuracao(cnpj,pjNome, extrairDataEmissao(notas[0]), lote, regime);
             apuracao.qtdNotas = notas.length;
 
