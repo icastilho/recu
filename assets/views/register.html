@@ -1,12 +1,9 @@
-<div class="well no-padding" ui-view>
-   <form id="smart-form-register" class="smart-form client-form" ua-signup>
+<div class="well no-padding">
+   <form id="smart-form-register" class="smart-form client-form" ua-signup ng-hide="verificationEmailSent">
       <header>
          <span>Cadastro</span>
 
          <div ng-show="error" class="alert alert-danger">{{ error.message }}</div>
-         <div ng-show="verificationEmailSent" class="alert alert-success">An email has been sent to your inbox. Click on
-            the link to verify your account.
-         </div>
       </header>
 
       <fieldset>
@@ -30,6 +27,7 @@
          <section>
             <label class="input"> <i class="icon-append fa fa-envelope"></i>
                <input type="email" name="login" placeholder="E-mail" ua-is-email>
+               <b class="tooltip tooltip-bottom-right">Informe seu e-mail, será utilizado para entrar no sistema!</b>
             </label>
          </section>
 
@@ -52,32 +50,24 @@
             <span ng-show="loading"><i class="fa fa-spinner fa-spin"></i> Cadastrando</span>
          </button>
       </footer>
-
-      <div class="message">
-         <i class="fa fa-check"></i>
-         <p>
-            Thank you for your registration!
-         </p>
-      </div>
-
    </form>
+
+   <div ng-show="verificationEmailSent" class="alert alert-success">
+      <i class="fa fa-check"></i> Um e-mail foi enviado para sua caixa de entrada. Clique nele para confirmar sua conta.
+   </div>
 </div>
 <h5 class="pull-right">Já tem cadastro? <a ui-sref="auth.login" class="btn btn-danger">Log In</a></h5>
 
 <script type="text/javascript">
-   runAllForms();
-
-   // Validation
    $(function () {
-      // Validation
       $("#smart-form-register").validate({
 
          // Rules for form validation
          rules: {
-            firstname: {
+            first_name: {
                required: true
             },
-            lastname: {
+            last_name: {
                required: true
             },
             login: {
@@ -99,10 +89,10 @@
 
          // Messages for form validation
          messages: {
-            firstname: {
+            first_name: {
                required: 'Informe o Primeiro Nome'
             },
-            lastname: {
+            last_name: {
                required: 'Informe o Sobrenome'
             },
             login: {

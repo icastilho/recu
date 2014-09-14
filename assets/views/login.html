@@ -1,4 +1,4 @@
-<div class="well no-padding" ui-view>
+<div class="well no-padding">
    <form id="login-form" class="smart-form client-form" ua-login>
       <header>
          <span>Log In</span>
@@ -26,7 +26,7 @@
             </label>
 
             <div class="note">
-               <a href="#/auth/forgot-password">Esqueceu a senha?</a>
+               <a ui-sref="auth.forgotpassword">Esqueceu a senha?</a>
             </div>
          </section>
 
@@ -37,7 +37,7 @@
          </section>
       </fieldset>
       <footer>
-         <button type="submit" class="btn btn-primary" ng-disabled="loading">
+         <button type="submit" class="btn btn-primary">
             <span ng-show="!loading">Entrar</span>
             <span ng-show="loading"><i class="fa fa-spinner fa-spin"></i> Entrando</span>
          </button>
@@ -45,7 +45,7 @@
    </form>
 </div>
 
-<h5 class="pull-right">Não tem cadastro? <a href="#/auth/signup" class="btn btn-danger">Criar conta</a></h5>
+<h5 class="pull-right">Não tem cadastro? <a ui-sref="auth.signup" class="btn btn-danger">Criar conta</a></h5>
 
 <script type="text/javascript">
 

@@ -90,9 +90,23 @@
                url: '/signup',
                templateUrl: 'views/register.html'
             })
+            .state('auth.verify_email', {
+               url: '/verify-email',
+               templateUrl: 'views/verify-email.html',
+               data:  {
+                  verify_email: true
+               }
+            })
             .state('auth.forgotpassword', {
                url: '/forgot-password',
                templateUrl: 'views/forgotpassword.html'
+            })
+            .state('auth.setpassword', {
+               url: '/set-password',
+               templateUrl: 'views/set-password.html',
+               data:  {
+                  set_password: true
+               }
             })
             .state('auth.login', {
                url: '/login',
