@@ -25,7 +25,18 @@ module.exports = {
          );
    },
 
-
+    corrigir: function (req, res) {
+        LoteUpload
+            .findOne(req.param("id"))
+            .then(
+                function(lote) {
+                    console.info("Start Correcao ICMS lote:...", lote.nome);
+                    ApuracaoService.corrigir(lote)
+                        .then(function (result) {
+                            res.json(result);
+                        });
+            });
+    },
    /**
     * Overrides for the settings in `config/controllers.js`
     * (specific to ApuracaoController)

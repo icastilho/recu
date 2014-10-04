@@ -51,6 +51,7 @@
 
                <a class="btn btn-labeled btn-danger" ng-show="lote.status==='PROCESSANDO'" ng-click="apurar(lote, 'CUMULATIVO')"> <span class="btn-label"><i class="glyphicon glyphicon-remove"></i></span>Reprocessar </a>
 
+               <a class="btn btn-info" ua-has-permission="admin" ng-click="corrigirICMS(lote)" title="Corrigir ICMS"><i class="glyphicon glyphicon-ok"></i></a>
                <a class="btn btn-danger" ua-has-permission="admin" ng-click="remover(lote)" title="Remover"><i class="glyphicon glyphicon-remove"></i></a>
 
             </td>

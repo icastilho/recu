@@ -33,6 +33,22 @@ function ApuracaoService() {
       return deferred.promise;
    }
 
+   this.corrigir = function(lote){
+//       var deferred = Q.defer();
+       findNotasPor(lote.nome)
+           .then(function(notas){
+               console.log("total notas a atualizar:{}",notas.length);
+               var i = 0;
+               notas.forEach(function (nota) {
+                    corrigirICMS(nota, i++, notas.length);
+               });
+           }) .done(function() {
+               console.log("Correcao ICMS rinning...".green);
+//               deferred.resolve("Concluido!");
+           });
+//       return deferred.promise;
+    }
+
    function findNotasPor(nome) {
       return NotaFiscal.find()
          .where({lote: nome})
@@ -165,19 +181,18 @@ function ApuracaoService() {
     * @param nota
     * @returns {*}
     */
-   function corrigirICMS(nota) {
-      var deferred = Q.defer();
-
+   function corrigirICMS(nota, identity, total) {
+      nota.dataEmissao = extrairDataEmissao(nota);
+      nota.iCMS = BigNumber(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
       var days =  moment().diff(nota.dataEmissao, 'days');
 
       SelicService.consultar(new Date(nota.dataEmissao), nota.iCMS, function (valor) {
-         deferred.resolve({
-            iCMSCorrigido: valor,
-            juros: valor.times(JUROS).times(days)
-         });
+             nota.iCMSCorrigido = valor;
+             nota.juros  = valor.times(JUROS).times(days);
+             nota.save();
+             console.log('ICMS Corrigido: '+nota.iCMSCorrigido.toString()+'. Nota:'+identity+' de '+total+''.green);
       });
 
-      return deferred.promise;
    }
 
    /**

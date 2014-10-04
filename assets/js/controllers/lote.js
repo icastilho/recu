@@ -28,6 +28,15 @@
          });
       };
 
+      $scope.corrigirICMS = function(lote) {
+          console.log('corrigir...')
+          $http.post('/apuracao/corrigir', JSON.stringify({
+              id: lote.id
+          })).success(function (data) {
+              lote.status = data;
+          });
+      }
+
       $scope.remover = function(lote) {
          $http.delete('/loteupload/'+lote.id)
             .success(function (data) {
