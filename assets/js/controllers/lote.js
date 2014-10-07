@@ -16,13 +16,11 @@
 
       $scope.obterLotes();
 
-      $scope.apurar = function (lote, regime) {
+      $scope.apurar = function (lote) {
          lote.status = 'PROCESSANDO';
-         $scope.regime = regime;
 
          $http.post('/apuracao/apurar', JSON.stringify({
-            id: lote.id,
-            regime: regime
+            id: lote.id
          })).success(function (data) {
             lote.status = data.status;
          });
