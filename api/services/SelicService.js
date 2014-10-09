@@ -8,6 +8,21 @@ var HashMap = require('hashmap').HashMap;
 var selicAcumulado = new HashMap();
 
 function SelicService() {
+
+  function calcularAtualizacao(valor, data) {
+    var valorAcumulado = selicAcumulado.get(data);
+    var i = 1;
+
+    //Caso seja um dia sem selic Feriados etc, pega do dia anterior
+    while (valorAcumulado == undefined) {
+      valorAcumulado = selicAcumulado.get(moment(data).subtract(i, 'days').toDate());
+      i++;
+    }
+
+    valor = valor.times(valorAcumulado);
+    return valor.round(2);
+  }
+
   this.consultar = function (data, valor, callback) {
 
     if (selicAcumulado.count() == 0) {
@@ -21,12 +36,10 @@ function SelicService() {
           selicAcumulado.set(selic.data, acumulado);
         });
 
-        valor = valor.times(selicAcumulado.get(data));
-        callback(valor.round(2));
+        callback(calcularAtualizacao(valor, data))
       });
     } else {
-      valor = valor.times(selicAcumulado.get(data));
-      callback(valor.round(2));
+      callback(calcularAtualizacao(valor, data));
     }
   }
 
