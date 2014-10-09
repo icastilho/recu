@@ -27,12 +27,12 @@
       };
 
       $scope.corrigirICMS = function(lote) {
-          console.log('corrigir...')
-          $http.post('/apuracao/corrigir', JSON.stringify({
-              id: lote.id
-          })).success(function (data) {
-              lote.status = data;
-          });
+         lote.status = 'CORRIGINDO';
+         $http.post('/apuracao/corrigir', JSON.stringify({
+            id: lote.id
+         })).success(function (data) {
+            lote.status = data.status;
+         });
       }
 
       $scope.remover = function(lote) {

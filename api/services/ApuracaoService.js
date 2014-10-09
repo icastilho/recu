@@ -40,29 +40,32 @@ function ApuracaoService() {
                console.log("total notas a atualizar:{}",notas.length);
                var i = 0;
 
-/*             async.each(notas, corrigirICMS, function(err){
+             async.each(notas, corrigirICMS, function(err){
                 if( err ) {
                    // One of the iterations produced an error.
                    // All processing will now stop.
                    console.log('A file failed to process');
+                   deferred.resolve("ERRO");
                 } else {
                    console.log('All files have been processed successfully');
+                   deferred.resolve(lote.status);
                 }
-             });*/
-
+             });
+/*
             var tempo = moment();
-             var q = async.queue(corrigirICMS, 100);
+             var q = async.queue(corrigirICMS, 1000);
 
                // assign a callback
                q.drain = function() {
                   console.log('all items have been processed');
                   console.log('Tempo:',moment().diff(tempo,'seconds'));
+                  deferred.resolve(lote.status);
                };
 
                q.push(notas, function (err) {
                   console.log('finished push nota ', i++);
                   console.log("Restao:", q.length());
-               });
+               });*/
            });
        return deferred.promise;
     }
@@ -80,10 +83,11 @@ function ApuracaoService() {
       var days =  moment().diff(nota.dataEmissao, 'days');
 
       SelicService.consultar(new Date(nota.dataEmissao), nota.iCMS, function (valor) {
-         nota.iCMSCorrigido = valor;
-         nota.juros  = valor.times(JUROS).times(days);
+         nota.iCMSCorrigido = valor.toString();
+         nota.juros  = valor.times(JUROS).times(days).toString();
+         nota.iCMS = nota.iCMS.toString();
          nota.save();
-         console.log('ICMS: '+nota.iCMS.toString()+' ICMS Corrigido: '+ nota.iCMSCorrigido.toString());
+         console.log('ICMS: '+nota.iCMS+' ICMS Corrigido: '+ nota.iCMSCorrigido);
          callback();
       });
 
@@ -121,9 +125,8 @@ function ApuracaoService() {
       notas.forEach(function (nota) {
 
          var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
-         var dataEmissao = extrairDataEmissao(nota);
+         var dataEmissao = moment(nota.dataEmissao);
          var anomes =  Number(dataEmissao.year().toString()+dataEmissao.month().toString());
-
 
          if (!apuracoesAFazer[cnpj])
             apuracoesAFazer[cnpj] = [];
@@ -167,7 +170,7 @@ function ApuracaoService() {
       }
 
       Q.all(apuracoesQueue)
-         .done(function() {corrigirICMS
+         .done(function() {
             deferred.resolve();
          });
 
@@ -187,13 +190,15 @@ function ApuracaoService() {
       var correcoesICMSQueue = [];
 
       nfes.forEach(function (nota) {
-         var iCMS = BigNumber(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
+         var iCMS = BigNumber(nota.iCMS);
+         var iCMSCorrigido = BigNumber(nota.iCMSCorrigido);
+         var juros =  BigNumber(nota.juros);
 
          apuracao.valorTotal = apuracao.valorTotal.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
          apuracao.frete = apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
          apuracao.iCMS = apuracao.iCMS.plus(iCMS);
-         apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(nota.iCMSCorrigido);
-         apuracao.juros = apuracao.juros.plus(nota.juros);
+         apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(iCMSCorrigido);
+         apuracao.juros = apuracao.juros.plus(juros);
 
       });
 

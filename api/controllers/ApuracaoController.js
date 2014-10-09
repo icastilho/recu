@@ -33,7 +33,7 @@ module.exports = {
                     console.info("Start Correcao ICMS lote:...", lote.nome);
                     ApuracaoService.corrigir(lote)
                         .then(function (result) {
-                            res.json(result);
+                            res.json({status:result});
                         });
             });
     },
