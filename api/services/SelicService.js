@@ -4,8 +4,7 @@ var split = require('split');
 var moment = require('moment');
 var async = require('async');
 var BigNumber = require('bignumber.js');
-var HashMap = require('hashmap').HashMap;
-var selicAcumulado = new HashMap();
+var selicAcumulado = require('memory-cache');
 
 function SelicService() {
 
@@ -17,33 +16,39 @@ function SelicService() {
     while (valorAcumulado == undefined) {
       valorAcumulado = selicAcumulado.get(moment(data).subtract(i, 'days').toDate());
       i++;
+      if (i > 4)
+        return valor.round(2);
     }
 
     valor = valor.times(valorAcumulado);
     return valor.round(2);
   }
 
-  this.consultar = function (data, valor, callback) {
+  this.cachearSelic = function () {
+    selicAcumulado.clear();
+    Selic.find().sort('data desc').exec(function (err, selics) {
+      var acumulado = BigNumber(1);
 
-    if (selicAcumulado.count() == 0) {
-      Selic.find().sort('data desc').exec(function (err, selics) {
-        var acumulado = BigNumber(1);
+      selics.forEach(function (selic) {
+        if (selic.fatorDiario > 0)
+          acumulado = acumulado.times(selic.fatorDiario);
 
-        selics.forEach(function (selic) {
-          if (selic.fatorDiario > 0)
-            acumulado = acumulado.times(selic.fatorDiario);
-
-          selicAcumulado.set(selic.data, acumulado);
-        });
-
-        callback(calcularAtualizacao(valor, data))
+        selicAcumulado.put(selic.data, acumulado);
       });
+    });
+  };
+
+  this.consultar = function (data, valor, callback) {
+    if (selicAcumulado.size() == 0) {
+      this.cachearSelic();
+      callback(calcularAtualizacao(valor, data))
     } else {
       callback(calcularAtualizacao(valor, data));
     }
   }
 
   this.atualizarSelic = function () {
+    var self = this;
     var data = {
       dataInicial: moment().subtract('years', 10).startOf('year').format('l'),
       dataFinal: moment().format('l'),
@@ -82,7 +87,11 @@ function SelicService() {
           console.log("Selic created:", user);
         }
       });
-    });
+    })
+      .on('end', function (){
+        console.log("Fim atualização selic")
+        self.cachearSelic();
+      });
   }
 }
 
