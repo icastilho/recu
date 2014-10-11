@@ -31,7 +31,8 @@ module.exports = {
             saveAs: function (__newFileStream,cb) {
               var filename = __newFileStream.filename.replace('.', '-') + '-' + moment().millisecond();
               cb(null, filename);
-            }
+            },
+            maxBytes: 100000000
           },
           function (err, files) {
             if (err)
