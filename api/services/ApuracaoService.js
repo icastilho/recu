@@ -17,8 +17,11 @@ function ApuracaoService() {
             return Apuracao.removerApuracoesDo(lote.nome);
          })
          .then(function() {
-            return findNotasPor(lote.nome);
+            return corrigir(lote);
          })
+        /* .then(function() {
+            return findNotasPor(lote.nome);
+         })*/
          .then(function(notas) {
             return apurar(notas, lote.nome, regime)
          })
@@ -33,7 +36,7 @@ function ApuracaoService() {
       return deferred.promise;
    }
 
-   this.corrigir = function(lote){
+    function corrigir(lote){
        var deferred = Q.defer();
        findNotasPor(lote.nome)
            .then(function(notas){
@@ -48,24 +51,9 @@ function ApuracaoService() {
                    deferred.resolve("ERRO");
                 } else {
                    console.log('All files have been processed successfully');
-                   deferred.resolve(lote.status);
+                   deferred.resolve(notas);
                 }
              });
-/*
-            var tempo = moment();
-             var q = async.queue(corrigirICMS, 1000);
-
-               // assign a callback
-               q.drain = function() {
-                  console.log('all items have been processed');
-                  console.log('Tempo:',moment().diff(tempo,'seconds'));
-                  deferred.resolve(lote.status);
-               };
-
-               q.push(notas, function (err) {
-                  console.log('finished push nota ', i++);
-                  console.log("Restao:", q.length());
-               });*/
            });
        return deferred.promise;
     }
@@ -152,11 +140,11 @@ function ApuracaoService() {
     * @param notas
     * @param lote
     */
-   function apurar(notas, lote, regime) {
+   function apurar(notas, lote) {
       var deferred = Q.defer();
       var apuracoes = extrairApuracoesAFazer(notas);
       var apuracoesQueue = [];
-
+      var regime = Apuracao.Regime.NAO_CUMULATIVO;
       for(var cnpj in apuracoes) {
 
          for (var anomes in apuracoes[cnpj]) {

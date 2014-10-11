@@ -12,9 +12,8 @@ module.exports = {
          .then(
             function(lote) {
                console.info("Start Apuracao lote:...", lote.nome);
-               var regime = Apuracao.Regime.NAO_CUMULATIVO;
                ApuracaoService
-                  .apurar(lote, regime)
+                  .apurar(lote)
                   .then(function (lote) {
                      res.json(lote);
                   });
