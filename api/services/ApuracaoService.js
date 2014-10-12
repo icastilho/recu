@@ -19,9 +19,6 @@ function ApuracaoService() {
          .then(function() {
             return corrigir(lote);
          })
-        /* .then(function() {
-            return findNotasPor(lote.nome);
-         })*/
          .then(function(notas) {
             return apurar(notas, lote.nome, regime)
          })
