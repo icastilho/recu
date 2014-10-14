@@ -19,6 +19,22 @@ module.exports = {
       status: 'string'
    },
 
+   beforeDestroy: function (criteria, callback) {
+
+     LoteUpload.findOne(criteria.where.id, function(err, loteUpload) {
+
+       NotaFiscal.destroy({lote: loteUpload.nome}, function(err, cb) {
+
+         if (err) return callback(err);
+
+         callback();
+
+       });
+
+     });
+
+   },
+
    LoteStatus: new Enum(['NOVO', 'PROCESSADO', 'ERRO', 'PROCESSANDO'])
 
 };
