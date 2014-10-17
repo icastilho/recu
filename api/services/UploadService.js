@@ -5,7 +5,10 @@ var fs = require('fs-extra'),
    path = require('path'),
    AdmZip = require('adm-zip'),
    d = require('domain').create(),
-   walk = require('fs-walk');
+   walk = require('fs-walk'),
+   FileQueue = require('filequeue'),
+   fq = new FileQueue(200);
+
 
 
 function UploadService() {
@@ -28,14 +31,22 @@ function UploadService() {
       var self = this;
       var dir = '.tmp/uploads';
 
-      fs.readdir(dir, function (err, files) {
+      fq.readdir(dir, function (err, files) {
          if (err) throw err;
 
          files.forEach(function (file) {
             Q.fcall(self.upload, dir + '/' + file, file).
                then(function () {
-                  fs.unlinkSync(dir + '/' + file);
+                 console.log("vai unlikar...");
+                  fs.unlinkSync(dir + '/' + file, function (err) {
+                    if (err){
+                      console.log(err);
+                      throw err;
+                    }
+                    console.log('successfully deleted ', file);
+                  });
                }).fail(function (err) {
+                  console.log("Eiitaaaa Falho merrrmo");
                   console.high(err);
                });
          });
@@ -67,7 +78,11 @@ function UploadService() {
 
             };
         }, function(err) {
-          if (err) console.log(err);
+          if (err) {
+            console.log(err);
+            console.log("Viu foi erro")
+            deferred.reject();
+          }
         });
 
          Q.all(queue).then(function () {
@@ -88,7 +103,7 @@ function UploadService() {
 
       console.log("[Upload]parseando arquivo: " + path);
 
-      fs.readFile(path, function (err, data) {
+      fq.readFile(path, function (err, data) {
         if (err)     console.log(err);
 
          parser.parseString(data, function (err, nota) {
@@ -98,7 +113,14 @@ function UploadService() {
                Q.fcall(validarXml, nota)
                   .then(classificar)
                   .then(function (nota) {
-                     fs.unlinkSync(path);
+                    console.log("vai deletar ", path );
+                     fs.unlinkSync(path, function (err) {
+                       if (err){
+                         console.log(err);
+                         throw err;
+                       }
+                       console.log('successfully deleted ', path);
+                     });
                      deferred.resolve(nota);
                   });
             }
