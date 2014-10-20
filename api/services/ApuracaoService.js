@@ -7,45 +7,49 @@ function ApuracaoService() {
 
    const JUROS = 0.0033;
 
-   this.apurar = function (lote, regime) {
-      var deferred = Q.defer();
+  this.apurar = function (lote) {
+    var deferred = Q.defer();
 
-      console.log("Apuracao Runing...".green);
+    console.log("Apuracao Runing...".green);
 
-      updateStatus(lote, LoteUpload.LoteStatus.PROCESSANDO)
-         .then(function() {
-            return Apuracao.removerApuracoesDo(lote.nome);
-         })
-         .then(function() {
-            return corrigir(lote);
-         })
-         .then(function(notas) {
-            return apurar(notas, lote.nome, regime)
-         })
-         .then(function() {
-            return updateStatus(lote, LoteUpload.LoteStatus.PROCESSADO);
-         })
-         .done(function(lote) {
-            console.log("done".green);
-            deferred.resolve(lote);
-         });
-
-      return deferred.promise;
-   }
+    updateStatus(lote, LoteUpload.LoteStatus.PROCESSANDO)
+      .then(function() {
+        return Apuracao.removerApuracoesDo(lote.nome);
+      })
+      .then(function() {
+        return corrigir(lote);
+      })
+      .then(function(notas) {
+        return apurar(notas, lote.nome)
+      })
+      .then(function() {
+        lote.status = LoteUpload.LoteStatus.PROCESSADO;
+        deferred.resolve(lote);
+      })
+      .fail(function(err){
+        console.error(err.stack);
+        lote.status = LoteUpload.LoteStatus.ERRO;
+        return deferred.reject(lote);
+      })
+      .done(function() {
+        console.log("Done - status: ",lote.status);
+        updateStatus(lote,lote.status);
+      });
+    return deferred.promise;
+  }
 
     function corrigir(lote){
        var deferred = Q.defer();
        findNotasPor(lote.nome)
            .then(function(notas){
-               console.log("total notas a atualizar:{}",notas.length);
+               console.log("total notas a atualizar: ",notas.length);
                var i = 0;
 
              async.each(notas, corrigirICMS, function(err){
                 if( err ) {
-                   // One of the iterations produced an error.
-                   // All processing will now stop.
-                   console.log('A file failed to process');
-                   deferred.resolve("ERRO");
+                   console.error('A file failed to process');
+                   console.error(err.stack);
+                   deferred.reject();
                 } else {
                    console.log('All files have been processed successfully');
                    deferred.resolve(notas);
@@ -63,17 +67,16 @@ function ApuracaoService() {
     */
    function corrigirICMS(nota, callback) {
 
-      nota.dataEmissao = extrairDataEmissao(nota);
-      nota.iCMS = BigNumber(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0]);
+      nota.iCMS = BigNumber(nota.iCMS);
       var days =  moment().diff(nota.dataEmissao, 'days');
 
       SelicService.consultar(new Date(nota.dataEmissao), nota.iCMS, function (valor) {
-         nota.iCMSCorrigido = valor.toString();
-         nota.juros  = valor.times(JUROS).times(days).toString();
-         nota.iCMS = nota.iCMS.toString();
-         nota.save();
-         console.log('ICMS: '+nota.iCMS+' ICMS Corrigido: '+ nota.iCMSCorrigido);
-         callback();
+          nota.iCMSCorrigido = valor.toString();
+          nota.juros = valor.times(JUROS).times(days).toString();
+          nota.iCMS = nota.iCMS.toString();
+          nota.save();
+          console.log('ICMS: ' + nota.iCMS + ' ICMS Corrigido: ' + nota.iCMSCorrigido);
+          callback();
       });
 
    }
@@ -81,7 +84,7 @@ function ApuracaoService() {
    function findNotasPor(nome) {
       return NotaFiscal.find()
          .where({lote: nome})
-         .sort('nfeProc.NFe.infNFe.ide.dEmi ASC');
+         .sort('dataEmissao ASC');
    }
 
    /**
@@ -94,9 +97,6 @@ function ApuracaoService() {
       return lote.save();
    }
 
-   function extrairDataEmissao(nota) {
-      return parseToDate(nota.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]);
-   }
 
    /**
     * @param notas
@@ -109,8 +109,8 @@ function ApuracaoService() {
 
       notas.forEach(function (nota) {
 
-         var cnpj = nota.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0];
-         var dataEmissao = moment(nota.dataEmissao);
+         var cnpj = nota.cnpj;
+         var dataEmissao = parseToDate(nota.dataEmissao);
          var anomes =  Number(dataEmissao.year().toString()+dataEmissao.month().toString());
 
          if (!apuracoesAFazer[cnpj])
@@ -146,9 +146,9 @@ function ApuracaoService() {
 
          for (var anomes in apuracoes[cnpj]) {
             var notas = apuracoes[cnpj][anomes];
-            var pjNome = notas[0].nfeProc.NFe[0].infNFe[0].emit[0].xNome;
-            var apuracao = criarApuracao(cnpj,pjNome, extrairDataEmissao(notas[0]), lote, regime);
-            apuracao.qtdNotas = notas.length;
+            var pjNome = notas[0].pjNome;
+            var apuracao = criarApuracao(cnpj,pjNome, parseToDate(notas[0].dataEmissao), lote, regime);
+            apuracao.qtdNotas = apuracoesQueue.length;
 
             apuracoesQueue.push(Q.fcall(apurarValores, apuracao, notas));
          }
@@ -162,6 +162,27 @@ function ApuracaoService() {
       return deferred.promise;
    }
 
+  function apurarCNPJ(cnpj, callback) {
+    console.log('apurarCNPJ', cnpj);
+    async.each(apuracoes[cnpj], async.apply(apurarNotas, apuracoes), function(err){
+      if(err){
+        callback(err);
+      }
+      callback();
+      console.log('All Notas have been processed successfully');
+    });
+    callback();
+  }
+
+  function apurarNotas(apuracoes, anomes, callback) {
+    console.log('apurarNotas');
+    var notas = apuracoes[cnpj][anomes];
+    var pjNome = notas[0].xNome;
+    var apuracao = criarApuracao(cnpj,pjNome, parseToDate(notas[0].dataEmissao), lote, regime);
+    apuracao.qtdNotas = notasapuracoesQueue.length;
+    apurarValores(apuracao, notas, callback);
+  }
+
    /**
     * Soma os valores das notas
     * @param apuracao
@@ -171,30 +192,29 @@ function ApuracaoService() {
    function apurarValores(apuracao, nfes) {
       console.log("Apurando valores...".green);
 
-      var deferred = Q.defer();
-      var correcoesICMSQueue = [];
-
       nfes.forEach(function (nota) {
          var iCMS = BigNumber(nota.iCMS);
          var iCMSCorrigido = BigNumber(nota.iCMSCorrigido);
          var juros =  BigNumber(nota.juros);
 
-         apuracao.valorTotal = apuracao.valorTotal.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0]);
-         apuracao.frete = apuracao.frete.plus(nota.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]);
+         apuracao.valorTotal = apuracao.valorTotal.plus(nota.valorNF);
+         apuracao.frete = apuracao.frete.plus(nota.valorFrete);
          apuracao.iCMS = apuracao.iCMS.plus(iCMS);
          apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(iCMSCorrigido);
          apuracao.juros = apuracao.juros.plus(juros);
 
       });
 
-      saveApuracao(apuracao, function () {
-        console.log("Saved!!! month: ".green, apuracao.mes);
-        console.log("qtdNotas".green, nfes.length);
-        deferred.resolve();
+      saveApuracao(apuracao, function (err) {
+        if(err) {
+          console.erro(err.stack);
+        }else {
+          console.log("Saved!!! month: ".green, apuracao.mes);
+          console.log("qtdNotas".green, nfes.length);
+        }
       });
 
       console.log("Finalizando apuracao...".green);
-      return deferred.promise;
    }
 
 
@@ -229,16 +249,17 @@ function ApuracaoService() {
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
 
-      Apuracao
-         .create(apuracao)
-         .exec(function (err, apuracao) {
-            if (err) {
-               console.error(error);
-               throw new (err);
+      Apuracao.create(apuracao)
+         .exec(function (err, aa) {
+            if (err){
+              throw err;
             }
+            else {
+              console.log("Apuracao Salvo com SUCESSO...");
+            }
+        });
 
-            callback();
-         });
+      callback();
    }
 
    /**
@@ -267,7 +288,7 @@ function ApuracaoService() {
    }
 
    /**
-    * Cria novo Objeto Apuracao
+    * Cria novo Objeto ApuracaocriarApuracao
     * @param cnpj
     * @param dataEmissao
     * @param lote
@@ -292,15 +313,15 @@ function ApuracaoService() {
       }
    }
 
-   /**
-    * Transforma o string 'yyyy-mm-dd' em data
-    * @param sdate
-    * @returns {Date}
-    */
-   function parseToDate(sdate) {
-      var date = moment(sdate, "YYYY-MM-DD");
-      return date
-   }
+  /**
+   * Transforma o string 'yyyy-mm-dd' em data
+   * @param sdate
+   * @returns {Date}
+   */
+  function parseToDate(sdate) {
+    var date = moment(sdate, "YYYY-MM-DD");
+    return date
+  }
 
 }
 
