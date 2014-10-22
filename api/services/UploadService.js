@@ -230,7 +230,7 @@ function UploadService() {
       chave: notaJson.nfeProc.protNFe[0].infProt[0].chNFe[0],
       natOp: notaJson.nfeProc.NFe[0].infNFe[0].ide[0].natOp[0],
       cnpj: notaJson.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0],
-      pjNome: notaJson.nfeProc.NFe[0].infNFe[0].emit[0].xNome,
+      pjNome: notaJson.nfeProc.NFe[0].infNFe[0].emit[0].xNome[0],
       iCMS: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0],
       dataEmissao: parseToDate(notaJson.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]),
       valorNF: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0],

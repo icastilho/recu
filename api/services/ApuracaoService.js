@@ -20,7 +20,7 @@ function ApuracaoService() {
         return corrigir(lote);
       })
       .then(function(notas) {
-        return apurar(notas, lote.nome)
+        return apurar(notas)
       })
       .then(function() {
         lote.status = LoteUpload.LoteStatus.PROCESSADO;
@@ -105,31 +105,29 @@ function ApuracaoService() {
     * @returns {Array} uma matriz com a estrutura [CNPJ][MES][NOTA]
     */
    function extrairApuracoesAFazer(notas) {
-      var apuracoesAFazer = [];
+     var apuracoesAFazer = [];
 
-      notas.forEach(function (nota) {
+     notas.forEach(function (nota) {
 
-         var cnpj = nota.cnpj;
-         var dataEmissao = parseToDate(nota.dataEmissao);
-         var anomes =  Number(dataEmissao.year().toString()+dataEmissao.month().toString());
+       var cnpj = nota.cnpj;
+       var dataEmissao = parseToDate(nota.dataEmissao);
+       var anomes =  Number(dataEmissao.year().toString()+dataEmissao.month().toString());
+       var key = cnpj+anomes;
 
-         if (!apuracoesAFazer[cnpj])
-            apuracoesAFazer[cnpj] = [];
+       if (nota.tipo == "VENDA") {
 
-         if (nota.tipo == "VENDA") {
+         if (!apuracoesAFazer[key])
+           apuracoesAFazer[key] = [];
 
-            if (!apuracoesAFazer[cnpj][anomes])
-               apuracoesAFazer[cnpj][anomes] = [];
+         apuracoesAFazer[key].push(nota);
 
-            apuracoesAFazer[cnpj][anomes].push(nota);
+       } else {
+         console.log("Nao é nota de venda: ".yellow, nota.chave);
+       }
 
-         } else {
-            console.log("Nao é nota de venda: ".yellow, nota.chave);
-         }
+     });
 
-      });
-
-      return apuracoesAFazer;
+     return apuracoesAFazer;
    }
 
    /**
@@ -137,49 +135,32 @@ function ApuracaoService() {
     * @param notas
     * @param lote
     */
-   function apurar(notas, lote) {
+   function apurar(notas) {
       var deferred = Q.defer();
       var apuracoes = extrairApuracoesAFazer(notas);
       var apuracoesQueue = [];
-      var regime = Apuracao.Regime.NAO_CUMULATIVO;
-      for(var cnpj in apuracoes) {
 
-         for (var anomes in apuracoes[cnpj]) {
-            var notas = apuracoes[cnpj][anomes];
-            var pjNome = notas[0].pjNome;
-            var apuracao = criarApuracao(cnpj,pjNome, parseToDate(notas[0].dataEmissao), lote, regime);
-            apuracao.qtdNotas = apuracoesQueue.length;
 
-            apuracoesQueue.push(Q.fcall(apurarValores, apuracao, notas));
-         }
-      }
-
-      Q.all(apuracoesQueue)
-         .done(function() {
-            deferred.resolve();
-         });
+     async.each(Object.keys(apuracoes), async.apply(apurarCNPJ, apuracoes), function(err){
+       if( err ) {
+         console.error('A file failed to process');
+       } else {
+         console.log('All files have been processed successfully');
+         deferred.resolve();
+       }
+     });
 
       return deferred.promise;
    }
 
-  function apurarCNPJ(cnpj, callback) {
+  function apurarCNPJ(apuracoes, cnpj, callback) {
     console.log('apurarCNPJ', cnpj);
-    async.each(apuracoes[cnpj], async.apply(apurarNotas, apuracoes), function(err){
-      if(err){
-        callback(err);
-      }
-      callback();
-      console.log('All Notas have been processed successfully');
-    });
-    callback();
-  }
+    var regime = Apuracao.Regime.NAO_CUMULATIVO;
+    var notas = apuracoes[cnpj];
 
-  function apurarNotas(apuracoes, anomes, callback) {
-    console.log('apurarNotas');
-    var notas = apuracoes[cnpj][anomes];
-    var pjNome = notas[0].xNome;
-    var apuracao = criarApuracao(cnpj,pjNome, parseToDate(notas[0].dataEmissao), lote, regime);
-    apuracao.qtdNotas = notasapuracoesQueue.length;
+    var pjNome = notas[0].pjNome;
+    var apuracao = criarApuracao(notas[0].cnpj,pjNome, parseToDate(notas[0].dataEmissao), notas[0].lote,regime);
+    apuracao.qtdNotas = notas.length;
     apurarValores(apuracao, notas, callback);
   }
 
@@ -189,7 +170,7 @@ function ApuracaoService() {
     * @param nfes
     * @returns {*}
     */
-   function apurarValores(apuracao, nfes) {
+   function apurarValores(apuracao, nfes, callback) {
       console.log("Apurando valores...".green);
 
       nfes.forEach(function (nota) {
@@ -207,13 +188,13 @@ function ApuracaoService() {
 
       saveApuracao(apuracao, function (err) {
         if(err) {
-          console.erro(err.stack);
+          console.error(err.stack);
         }else {
           console.log("Saved!!! month: ".green, apuracao.mes);
           console.log("qtdNotas".green, nfes.length);
         }
       });
-
+     callback();
       console.log("Finalizando apuracao...".green);
    }
 
@@ -248,18 +229,22 @@ function ApuracaoService() {
 
       apuracao.iCMS = apuracao.iCMS.toString();
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
+      apuracao.juros = apuracao.juros.toString();
+      apuracao.recuperar = apuracao.recuperar.toString();
 
-      Apuracao.create(apuracao)
-         .exec(function (err, aa) {
+     console.log(apuracao);
+      Apuracao.create(apuracao).exec(function (err, apura) {
+          console.log("apurasa saved");
             if (err){
-              throw err;
+              console.log("apurasa erro");
             }
             else {
               console.log("Apuracao Salvo com SUCESSO...");
+              callback();
             }
         });
 
-      callback();
+
    }
 
    /**
@@ -319,7 +304,7 @@ function ApuracaoService() {
    * @returns {Date}
    */
   function parseToDate(sdate) {
-    var date = moment(sdate, "YYYY-MM-DD");
+    var date = moment(sdate);
     return date
   }
 
