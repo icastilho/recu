@@ -23,17 +23,17 @@ function ApuracaoService() {
         return apurar(notas)
       })
       .then(function() {
-        lote.status = LoteUpload.LoteStatus.PROCESSADO;
+        lote.status = LoteUpload.LoteStatus.PROCESSADO.key;
         deferred.resolve(lote);
       })
       .fail(function(err){
         console.error(err.stack);
-        lote.status = LoteUpload.LoteStatus.ERRO;
+        lote.status = LoteUpload.LoteStatus.ERRO.key;
         return deferred.reject(lote);
       })
       .done(function() {
         console.log("Done - status: ",lote.status);
-        updateStatus(lote,lote.status);
+        updateStatus(lote);
       });
     return deferred.promise;
   }
@@ -92,8 +92,7 @@ function ApuracaoService() {
     * @param lote
     * @param status
     */
-   function updateStatus(lote, status){
-      lote.status = status.key;
+   function updateStatus(lote){
       return lote.save();
    }
 
