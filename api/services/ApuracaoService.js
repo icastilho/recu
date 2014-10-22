@@ -232,7 +232,6 @@ function ApuracaoService() {
       apuracao.juros = apuracao.juros.toString();
       apuracao.recuperar = apuracao.recuperar.toString();
 
-     console.log(apuracao);
       Apuracao.create(apuracao).exec(function (err, apura) {
           console.log("apurasa saved");
             if (err){
