@@ -32,7 +32,7 @@ function ApuracaoService() {
         return deferred.reject(lote);
       })
       .done(function() {
-        console.log("Done - status: ",lote.status);
+        console.log("[Apuracao] Concluido! Status: ".green,lote.status);
         updateStatus(lote);
       });
     return deferred.promise;
@@ -42,16 +42,16 @@ function ApuracaoService() {
        var deferred = Q.defer();
        findNotasPor(lote.nome)
            .then(function(notas){
-               console.log("total notas a atualizar: ",notas.length);
+               console.log("[Apuracao] Total notas a atualizar: ",notas.length);
                var i = 0;
 
              async.each(notas, corrigirICMS, function(err){
                 if( err ) {
-                   console.error('A file failed to process');
+                   console.error('[ ICMS ] ERROR'.red);
                    console.error(err.stack);
                    deferred.reject();
                 } else {
-                   console.log('All files have been processed successfully');
+                   console.log('[ ICMS ] Atualizado com SUCESSO'.green);
                    deferred.resolve(notas);
                 }
              });
@@ -75,7 +75,7 @@ function ApuracaoService() {
           nota.juros = valor.times(JUROS).times(days).toString();
           nota.iCMS = nota.iCMS.toString();
           nota.save();
-          console.log('ICMS: ' + nota.iCMS + ' ICMS Corrigido: ' + nota.iCMSCorrigido);
+          console.log('[ ICMS ] iCMS: ' + nota.iCMS + ' ICMS Corrigido: ' + nota.iCMSCorrigido);
           callback();
       });
 
@@ -121,7 +121,8 @@ function ApuracaoService() {
          apuracoesAFazer[key].push(nota);
 
        } else {
-         console.log("Nao é nota de venda: ".yellow, nota.chave);
+         console.log("[Apuracao] Nao é nota de venda: ".yellow, nota.chave);
+         nota = null;
        }
 
      });
@@ -135,6 +136,7 @@ function ApuracaoService() {
     * @param lote
     */
    function apurar(notas) {
+     console.log('[Apurando]...'.blue);
       var deferred = Q.defer();
       var apuracoes = extrairApuracoesAFazer(notas);
       var apuracoesQueue = [];
@@ -142,18 +144,18 @@ function ApuracaoService() {
 
      async.each(Object.keys(apuracoes), async.apply(apurarCNPJ, apuracoes), function(err){
        if( err ) {
-         console.error('A file failed to process');
+         console.error('[Apurando] ERROR '.red);
        } else {
-         console.log('All files have been processed successfully');
+         console.log('[Apurando] Todas as apuracoes foram processadas com SUCESSO'.green);
          deferred.resolve();
        }
+       apuracoes = null;
      });
 
       return deferred.promise;
    }
 
   function apurarCNPJ(apuracoes, cnpj, callback) {
-    console.log('apurarCNPJ', cnpj);
     var regime = Apuracao.Regime.NAO_CUMULATIVO;
     var notas = apuracoes[cnpj];
 
@@ -170,7 +172,7 @@ function ApuracaoService() {
     * @returns {*}
     */
    function apurarValores(apuracao, nfes, callback) {
-      console.log("Apurando valores...".green);
+      console.log("[Apurando] valores...".blue);
 
       nfes.forEach(function (nota) {
          var iCMS = BigNumber(nota.iCMS);
@@ -189,12 +191,14 @@ function ApuracaoService() {
         if(err) {
           console.error(err.stack);
         }else {
-          console.log("Saved!!! month: ".green, apuracao.mes);
-          console.log("qtdNotas".green, nfes.length);
+          console.log("[Apurando] Saved!!! mes: ".green, apuracao.mes);
+          console.log("[Apurando] qtdNotas".green, nfes.length);
         }
+        nfes = null;
+        callback();
       });
-     callback();
-      console.log("Finalizando apuracao...".green);
+
+      console.log("[Apurando] Finalizando apuracao...".green);
    }
 
 
@@ -205,7 +209,7 @@ function ApuracaoService() {
     * @param callback
     */
    function saveApuracao(apuracao, callback) {
-      console.log('saveApuracao'.green);
+      console.log('[Apuracao] saveApuracao'.blue);
 
       apuracao.frete = apuracao.frete.toString();
       apuracao.valorTotal = apuracao.valorTotal.toString();
@@ -214,15 +218,15 @@ function ApuracaoService() {
       console.info(apuracao.regime.value.pis);
       console.info(apuracao.regime.value.cofins);
 
-      console.info("BRUTO".yellow);
+      console.info("[Apuracao] BRUTO".blue);
       apuracao.creditoBruto = calculaCredito(apuracao.iCMS, apuracao.regime)
       console.log(apuracao.creditoBruto);
 
-      console.info("ATUALIZADO".yellow);
+      console.info("[Apuracao] ATUALIZADO".blue);
       apuracao.creditoAtualizado = calculaCredito(apuracao.iCMSCorrigido, apuracao.regime);
       console.info(apuracao.creditoAtualizado);
 
-      console.info("VIRTUAL".yellow);
+      console.info("[Apuracao] VIRTUAL".blue);
       apuracao.creditoVirtual = calculaCredito(apuracao.iCMSCorrigido.plus(apuracao.juros), apuracao.regime);
       console.info(apuracao.creditoVirtual);
 
@@ -231,22 +235,24 @@ function ApuracaoService() {
       apuracao.juros = apuracao.juros.toString();
       apuracao.recuperar = apuracao.recuperar.toString();
 
-      Apuracao.create(apuracao).exec(function (err, apura) {
-          console.log("apurasa saved");
+      console.log(apuracao);
+
+      Apuracao.create(apuracao).exec(function (err) {
             if (err){
-              console.log("apurasa erro");
+              console.log("[Apuracao] Salvo com ERROR".red);
             }
             else {
-              console.log("Apuracao Salvo com SUCESSO...");
-              callback();
+              console.log("[Apuracao] Salvo com SUCESSO".green);
+              apuracao=null;
+
             }
         });
-
-
+      console.log("passou");
+      callback();
    }
 
    /**
-    * Calcula o valor a ser recuperado aplicando as alicotas de PIS/Confins de acordo com o tipo de Regime informado
+    * Calcula o valor a ser recuperado aplicando as alicotas de PI     callback();S/Confins de acordo com o tipo de Regime informado
     * @param valor
     * @param regime
     * @returns {{pis: *, cofins: *, total: *}}
@@ -255,11 +261,6 @@ function ApuracaoService() {
       var pis = regime.value.pis,
             cofins = regime.value.cofins,
                DARF = BigNumber(pis).plus(BigNumber(cofins));
-
-      console.log("darf:", DARF);
-      console.log('pis'+valor.times(pis).toString());
-      console.log('cofins'+valor.times(cofins).toString());
-      console.log('DARF'+valor.times(DARF).toString());
 
       var retorno = {
          pis: valor.times(pis).toString(),

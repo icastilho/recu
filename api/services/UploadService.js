@@ -8,7 +8,7 @@ var fs = require('fs-extra'),
   walk = require('walk'),
   FileQueue = require('filequeue'),
   moment = require('moment'),
-  fq = new FileQueue(500);
+  fq = new FileQueue(200);
 
 
 
@@ -28,37 +28,15 @@ function UploadService() {
     status: LoteUpload.LoteStatus.NOVO.key
   };
 
-  this.processarArquivos = function () {
-    var self = this;
-    var dir = '.tmp/uploads';
 
-    fq.readdir(dir, function (err, files) {
-      if (err) throw err;
-
-      files.forEach(function (file) {
-        Q.fcall(self.upload, dir + '/' + file, file).
-          then(function () {
-            fs.unlinkSync(dir + '/' + file, function (err) {
-              if (err){
-                console.log(err);
-                throw err;
-              }
-              console.log('successfully deleted ', file);
-            });
-          }).fail(function (err) {
-            console.high(err);
-          });
-      });
-    });
-  };
-
-  this.upload = function (file, filename) {
+  this.upload = function (dir, filename) {
     var deferred = Q.defer();
 
-    console.log("[Upload]arquivo " + filename + " inicio processamento.".green);
+    console.log("[Upload] arquivo " + filename + " inicio processamento.".green);
     loteUpload.nome = filename;
-
-    var zip = new AdmZip(file);
+    var nomefile = dir+"/"+filename;
+    console.log(nomefile);
+    var zip = new AdmZip(nomefile);
     var dir = '.tmp/zips';
 
     d.on('error', function (err) {
@@ -85,7 +63,7 @@ function UploadService() {
 
       walker.on("file", function (root, fileStats, next) {
         if (invalidarArquivo(fileStats.name)){
-          console.log("Is Invalid file",fileStats.name);
+          console.log("Is Invalid file",fileStatsdir+filename.name);
           next();
         }else {
           parsearArquivo(root + '/' + fileStats.name, next);
@@ -99,8 +77,10 @@ function UploadService() {
 
       walker.on("end", function () {
         salvar(function () {
-          deferred.resolve();
+          fs.unlinkSync(nomefile);
           console.log("[Upload]arquivo ".green + filename + " processado com SUCESSO.".green);
+          deferred.resolve();
+          walker = null;
         });
       });
 
@@ -133,6 +113,8 @@ function UploadService() {
               fs.unlink(path, function (err) {
                 if (err) { console.error(err.stack); callback(err);}
                 else{  console.log('successfully deleted ', path); callback();}
+                data = null;
+                notaJson = null;
               });
             });
         }
@@ -241,14 +223,14 @@ function UploadService() {
   function salvar(callback) {
     callback();
 
-    console.log("Salvando LoteUpload...");
+    console.log("[LoteUpload] Salvando ...".green);
 
     loteUpload.notas = [];
 
     LoteUpload.create(loteUpload).exec(function (err, lote) {
       if (err)  throw err;
       else {
-        console.log("LoteUpload Salvo...");
+        console.log("[LoteUpload] Salvo com SUCESSO".green);
       }
     });
   }

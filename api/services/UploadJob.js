@@ -12,19 +12,22 @@ function UploadJob(){
 
         fs.readdir(dir, function (err, files) {
             if (err) {
-                console.log("[UPLOAD] Não foi possível ler o diretório de uploads ".underline.red);
+                console.log("[UPLOADJOB] Não foi possível ler o diretório de uploads ".underline.red);
                 console.trace(err);
 
                 return;
             }
+          var uploadService = new UploadService();
+          async.each(files, async.apply(uploadService.upload, dir), function(err){
+            if( err ) {
+              console.error('[UPLOADJOB] ERROR '.red);
+              console.error(err.stack)
+            } else {
+              console.log('[UPLOADJOB] Todos os arquivos foram processados com SUCESSO'.green);
+            }
 
-            files.forEach(function (file) {
-                var uploadService = new UploadService();
-                Q.fcall(uploadService.upload, dir + '/' + file, file).
-                    then(function () {
-                        fs.unlinkSync(dir + '/' + file);
-                    });
-            });
+          });
+
         });
     }
 }
