@@ -62,11 +62,12 @@ function UploadService() {
       });
 
       walker.on("file", function (root, fileStats, next) {
-        if (invalidarArquivo(fileStats.name)){
-          console.log("Is Invalid file",fileStatsdir+filename.name);
+        var path = root + '/' + fileStats.name;
+        if (invalidarArquivo(path)){
+          console.log("Is Invalid file: ",path);
           next();
         }else {
-          parsearArquivo(root + '/' + fileStats.name, next);
+          parsearArquivo(path, next);
         }
       });
 
