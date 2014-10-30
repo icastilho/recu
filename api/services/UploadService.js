@@ -214,7 +214,9 @@ function UploadService() {
       cnpj: notaJson.nfeProc.NFe[0].infNFe[0].emit[0].CNPJ[0],
       pjNome: notaJson.nfeProc.NFe[0].infNFe[0].emit[0].xNome[0],
       iCMS: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0],
-      dataEmissao: parseToDate(notaJson.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0]),
+      dataEmissao: notaJson.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0],
+      pPIS: parseFloat(notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].PIS[0].PISAliq[0].pPIS[0]),
+      pCOFINS: parseFloat(notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].COFINS[0].COFINSAliq[0].pCOFINS[0]),
       valorNF: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0],
       valorFrete: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]
     }
@@ -235,16 +237,6 @@ function UploadService() {
     });
   }
 
-
-  /**
-   * Transforma o string 'yyyy-mm-dd' em data
-   * @param sdate
-   * @returns {Date}
-   */
-  function parseToDate(sdate) {
-    var date = new Date(sdate, "YYYY-MM-DD");
-    return date
-  }
 }
 
 

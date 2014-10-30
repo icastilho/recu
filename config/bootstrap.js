@@ -13,7 +13,7 @@ var UploadJob = require("../api/services/UploadJob.js");
 var CronJob = require('cron').CronJob;
 var moment = require('moment');
 var colors = require('colors');
-
+var BigNumber = require('bignumber.js');
 
 module.exports.bootstrap = function (cb) {
 
@@ -27,7 +27,7 @@ module.exports.bootstrap = function (cb) {
       SelicService.atualizarSelic();
    }, null, true, "America/Sao_Paulo");
 
-
+   SelicService.consultar(new Date(), BigNumber(100),function(valor){})
    // It's very important to trigger this callback method when you are finished
    // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
    cb();

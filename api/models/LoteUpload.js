@@ -1,40 +1,42 @@
 var Enum = require('enum');
 module.exports = {
-   attributes: {
-      nome: {
-         type: 'string',
-         unique: true,
-         required: true
-      },
-      notas: 'array',
-      chavesDuplicadas: 'array',
-      arquivo: 'binary',
-      total: 'float',
-      totalCredito: 'integer',
-      totalCancelamento: 'integer',
-      totalRemessa: 'integer',
-      naoSaoNotas: 'integer',
-      duplicadas: 'integer',
-      outros: 'integer',
-      status: 'string'
-   },
+  attributes: {
+    nome: {
+      type: 'string',
+      unique: true,
+      required: true
+    },
+    notas: 'array',
+    chavesDuplicadas: 'array',
+    arquivo: 'binary',
+    total: 'float',
+    totalCredito: 'integer',
+    totalCancelamento: 'integer',
+    totalRemessa: 'integer',
+    naoSaoNotas: 'integer',
+    duplicadas: 'integer',
+    outros: 'integer',
+    status: 'string'
+  },
 
-   beforeDestroy: function (criteria, callback) {
+  beforeDestroy: function (criteria, callback) {
+    console.log("[Lote] removido com SUCESSO!".green)
+    LoteUpload.findOne(criteria.where.id, function(err, loteUpload) {
 
-     LoteUpload.findOne(criteria.where.id, function(err, loteUpload) {
+      NotaFiscalJson.destroy({lote: loteUpload.nome}, function(err, nfj) {
+        if (err) return callback(err);
+      });
 
-       NotaFiscal.destroy({lote: loteUpload.nome}, function(err, cb) {
+      NotaFiscal.destroy({lote: loteUpload.nome}, function(err, nf) {
+        if (err) return callback(err);
+        console.log("[Nota Fiscal] removido com SUCESSO!".green)
+        callback();
+      });
 
-         if (err) return callback(err);
+    });
 
-         callback();
+  },
 
-       });
-
-     });
-
-   },
-
-   LoteStatus: new Enum(['NOVO', 'PROCESSADO', 'ERRO', 'PROCESSANDO'])
+  LoteStatus: new Enum(['NOVO', 'PROCESSADO', 'ERRO', 'PROCESSANDO'])
 
 };

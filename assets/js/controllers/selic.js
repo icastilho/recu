@@ -9,7 +9,7 @@
         $scope.selic = [];
         $scope.carregando = false;
         $scope.data = '12/12/2012';
-        $scope.valor = '0';
+        $scope.valor = '100';
         $scope.selic = null;
 
         $scope.consultar = function(data, valor){
