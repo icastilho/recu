@@ -35,7 +35,6 @@ function UploadService() {
     console.log("[Upload] arquivo " + filename + " inicio processamento.".green);
     loteUpload.nome = filename;
     var nomefile = dir+"/"+filename;
-    console.log(nomefile);
     var zip = new AdmZip(nomefile);
     var dir = '.tmp/zips';
 
@@ -78,7 +77,11 @@ function UploadService() {
 
       walker.on("end", function () {
         salvar(function () {
-          fs.unlinkSync(nomefile);
+          fs.unlinkSync(nomefile, function (err) {
+            if (err) { console.error(err);
+            }else{ console.log('[Upload]arquivo successfully deleted ', nomefile);
+            }
+          });
           console.log("[Upload]arquivo ".green + filename + " processado com SUCESSO.".green);
           deferred.resolve();
           walker = null;
@@ -107,12 +110,12 @@ function UploadService() {
             .then(classificar)
             .then(salvarNota)
             .fail(function(err){
-              console.error(err.stack);
+              console.error(err);
               callback(err);
             })
             .done(function () {
               fs.unlink(path, function (err) {
-                if (err) { console.error(err.stack); callback(err);}
+                if (err) { console.error(err); callback(err);}
                 else{  console.log('successfully deleted ', path); callback();}
                 data = null;
                 notaJson = null;
@@ -194,8 +197,9 @@ function UploadService() {
 
   function salvarNotaJson(notaJson) {
       notaJson.lote = loteUpload.nome;
+      notaJson.chave = notaJson.nfeProc.protNFe[0].infProt[0].chNFe[0];
       NotaFiscalJson.create(notaJson, function(err){
-        if(err) console.log(err.stack);
+        if(err) console.error(err);
       });
       return JSON.stringify(notaJson);
   }
@@ -208,6 +212,22 @@ function UploadService() {
 
 
   function parseNota(notaJson){
+    var pis = parseFloat((function(){
+      if( notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].PIS[0].PISAliq ){
+        return notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].PIS[0].PISAliq[0].pPIS[0];
+      }else{
+        return 0;
+      }})());
+
+    var cofins = parseFloat((function(){
+      if( notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].COFINS[0].COFINSAliq ){
+        return notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].COFINS[0].COFINSAliq[0].pCOFINS[0];
+      }else{
+        return 0;
+      }
+    })());
+
+    console.log("Pis:", pis,"cofins: ",cofins);
     return {
       lote: loteUpload.nome,
       chave: notaJson.nfeProc.protNFe[0].infProt[0].chNFe[0],
@@ -216,8 +236,8 @@ function UploadService() {
       pjNome: notaJson.nfeProc.NFe[0].infNFe[0].emit[0].xNome[0],
       iCMS: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vICMS[0],
       dataEmissao: notaJson.nfeProc.NFe[0].infNFe[0].ide[0].dEmi[0],
-      pPIS: parseFloat(notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].PIS[0].PISAliq[0].pPIS[0]),
-      pCOFINS: parseFloat(notaJson.nfeProc.NFe[0].infNFe[0].det[0].imposto[0].COFINS[0].COFINSAliq[0].pCOFINS[0]),
+      pPIS: pis,
+      pCOFINS: cofins,
       valorNF: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vNF[0],
       valorFrete: notaJson.nfeProc.NFe[0].infNFe[0].total[0].ICMSTot[0].vFrete[0]
     }

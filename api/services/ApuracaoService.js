@@ -73,9 +73,19 @@ function ApuracaoService() {
     var days =  moment().diff(nota.dataEmissao, 'days');
     SelicService.consultar(new Date(parseToDate(nota.dataEmissao)), nota.iCMS, function (valor) {
       nota.juros = valor.times(JUROS).times(days);
-      nota.creditoBruto = calculaCredito(nota.iCMS, nota.vPIS, nota.vCOFINS);
-      nota.atualizadoBruto = calculaCredito(valor, nota.vPIS, nota.vCOFINS);
-      nota.creditoVirtual = calculaCredito(valor.plus(nota.juros), nota.vPIS, nota.vCOFINS);
+
+      //console.info("[Apuracao] BRUTO".blue);
+      nota.creditoBruto = calculaCredito(nota.iCMS, nota.pPIS, nota.pCOFINS);
+      //console.log(nota.creditoBruto);
+
+      //console.info("[Apuracao] ATUALIZADO".blue);
+      nota.creditoAtualizado = calculaCredito(valor, nota.pPIS, nota.pCOFINS);
+      //console.info(nota.creditoAtualizado);
+
+      //console.info("[Apuracao] VIRTUAL".blue);
+      nota.creditoVirtual = calculaCredito(valor.plus(nota.juros), nota.pPIS, nota.pCOFINS);
+      //console.info(nota.creditoVirtual);
+
       nota.iCMSCorrigido = valor.toString();
       nota.iCMS = nota.iCMS.toString();
       nota.juros = nota.juros.toString();
@@ -143,7 +153,6 @@ function ApuracaoService() {
     var deferred = Q.defer();
     var apuracoes = extrairApuracoesAFazer(notas);
 
-
     async.each(Object.keys(apuracoes), async.apply(apurarCNPJ, apuracoes), function(err){
       if( err ) {
         console.error('[Apurando] ERROR '.red);
@@ -186,6 +195,18 @@ function ApuracaoService() {
       apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.plus(iCMSCorrigido);
       apuracao.juros = apuracao.juros.plus(juros);
 
+      apuracao.creditoBruto.pis = BigNumber(nota.creditoBruto.pis||0);
+      apuracao.creditoBruto.cofins = BigNumber(nota.creditoBruto.cofins||0);
+      apuracao.creditoBruto.total= BigNumber(nota.creditoBruto.total||0);
+
+      apuracao.creditoAtualizado.pis = BigNumber(nota.creditoAtualizado.pis||0);
+      apuracao.creditoAtualizado.cofins = BigNumber(nota.creditoAtualizado.cofins||0);
+      apuracao.creditoAtualizado.total= BigNumber(nota.creditoAtualizado.total||0);
+
+      apuracao.creditoVirtual.pis = BigNumber(nota.creditoVirtual.pis||0);
+      apuracao.creditoVirtual.cofins = BigNumber(nota.creditoVirtual.cofins||0);
+      apuracao.creditoVirtual.total= BigNumber(nota.creditoVirtual.total||0);
+
     });
 
     saveApuracao(apuracao, function (err) {
@@ -215,9 +236,17 @@ function ApuracaoService() {
     apuracao.frete = apuracao.frete.toString();
     apuracao.valorTotal = apuracao.valorTotal.toString();
 
-    console.info(apuracao.creditoBruto);
-    console.info(apuracao.creditoAtualizado);
-    console.info(apuracao.creditoVirtual);
+    apuracao.creditoBruto.pis = apuracao.creditoBruto.pis.toString();
+    apuracao.creditoBruto.cofins = apuracao.creditoBruto.cofins.toString();
+    apuracao.creditoBruto.total = apuracao.creditoBruto.cofins.toString();
+
+    apuracao.creditoAtualizado.pis = apuracao.creditoAtualizado.pis.toString();
+    apuracao.creditoAtualizado.cofins = apuracao.creditoAtualizado.cofins.toString();
+    apuracao.creditoAtualizado.total= apuracao.creditoAtualizado.total.toString();
+
+    apuracao.creditoVirtual.pis = apuracao.creditoVirtual.pis.toString();
+    apuracao.creditoVirtual.cofins = apuracao.creditoVirtual.cofins.toString();
+    apuracao.creditoVirtual.total= apuracao.creditoVirtual.total.toString();
 
     apuracao.iCMS = apuracao.iCMS.toString();
     apuracao.iCMSCorrigido = apuracao.iCMSCorrigido.toString();
@@ -245,7 +274,7 @@ function ApuracaoService() {
   }
 
   /**
-   * Calcula o valor a ser recuperado aplicando as alicotas de PI     callback();S/Confins de acordo com o tipo de  informado
+   * Calcula o valor a ser recuperado aplicando as alicotas de PIS/Confins de acordo com o tipo de  informado
    * @param valor
    * @returns {{pis: *, cofins: *, total: *}}
    */
@@ -253,11 +282,10 @@ function ApuracaoService() {
     var DARF = BigNumber(vPIS + vCOFINS);
 
     var retorno = {
-      pis: valor.times(vPIS).toString(),
-      cofins: valor.times(vCOFINS).toString(),
+      pis: valor.times(BigNumber(vPIS)).toString(),
+      cofins: valor.times(BigNumber(vCOFINS)).toString(),
       total: valor.times(DARF).toString()
     };
-    console.log(retorno);
     return retorno;
   }
 
@@ -282,7 +310,22 @@ function ApuracaoService() {
       juros: BigNumber(0),
       recuperar: BigNumber(0),
       frete: BigNumber(0),
-      valorTotal: BigNumber(0)
+      valorTotal: BigNumber(0),
+      creditoBruto:{
+        pis:BigNumber(0),
+        cofins:BigNumber(0),
+        total:BigNumber(0)
+      },
+      creditoAtualizado:{
+        pis:BigNumber(0),
+        cofins:BigNumber(0),
+        total:BigNumber(0)
+      },
+      creditoVirtual:{
+        pis:BigNumber(0),
+        cofins:BigNumber(0),
+        total:BigNumber(0)
+      }
     }
   }
 
